@@ -1,7 +1,7 @@
-const dup = require('./duplicate');
-const test = require('./testsUtils');
+const dup = require('../index');
+const test = require('../testsUtils');
 
-const testData = require('./testData.json');
+const testData = require('./data/testData.json');
 
 function testDuplicate(text1, text2, topic, isSubject = false) {
     let nbr1 = dup.getNbr(topic, text1, isSubject);

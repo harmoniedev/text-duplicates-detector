@@ -1,6 +1,6 @@
 
 
-function describeJsonData(suiteTitle,testData, testCaseCallback) {
+function describeJsonData(suiteTitle, testData, testCaseCallback) {
     describe.only(suiteTitle, () => {
         let executedTestsData = testData.filter((tcData) => tcData.only);
         if (executedTestsData.length === 0) {
@@ -15,9 +15,7 @@ function describeJsonData(suiteTitle,testData, testCaseCallback) {
                 it(title, () => testCaseCallback(tcData));
             }
         }
-
     });
-
 }
 
 module.exports = {
