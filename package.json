@@ -1,5 +1,5 @@
 {
-  "name": "duplicate-text-detector",
+  "name": "@harmon.ie/duplicate-text-detector",
   "version": "0.0.1",
   "description": "Detects text duplication",
   "scripts": {
@@ -7,7 +7,7 @@
   },
   "author": "Harmon.ie",
   "dependencies": {
-    "@harmon.ie/email-util": "^0.0.9",
+    "@harmon.ie/email-util": "^0.0.10",
     "fast-diff": "^1.1.2",
     "lodash": "^4.17.5"
   },

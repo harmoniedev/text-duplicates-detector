@@ -16,9 +16,9 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@harmon.ie/email-util@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@harmon.ie/email-util/-/email-util-0.0.9.tgz#ddd60ee3f1788e3e0b99a0cc8af811ca7a1814b6"
+"@harmon.ie/email-util@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@harmon.ie/email-util/-/email-util-0.0.10.tgz#ca8164815d2537fd26809b83ad84f245a7cb75d7"
   dependencies:
     fs-extra "^7.0.0"
     shallowequal "^1.1.0"
