@@ -7,6 +7,7 @@
   },
   "author": "Harmon.ie",
   "dependencies": {
+    "@harmon.ie/email-util": "^0.0.9",
     "fast-diff": "^1.1.2",
     "lodash": "^4.17.5"
   },

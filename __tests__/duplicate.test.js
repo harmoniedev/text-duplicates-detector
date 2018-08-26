@@ -1,5 +1,5 @@
 const dup = require('../index');
-const test = require('../testsUtils');
+const testMe = require('@harmon.ie/email-util/testsUtils');
 
 const testData = require('./data/testData.json');
 
@@ -13,16 +13,10 @@ function testDuplicate(text1, text2, topic, isSubject = false) {
 }
 
 
-test.describeJsonData('duplicate text tests', testData, (t) => {
+testMe.describeJsonData('duplicate text tests', testData, (t) => {
     const res = testDuplicate(t.a, t.b, t.topic, t.isSubject);
     //console.log(`duplicate pair: ${t.topic} dist: ${JSON.stringify(res.dist)} inSubject:${t.isSubject} text: ${t.a} oText: ${t.b}\nnbr.left: ${res.nbr.left.replace(/\r\n/g,' ')} res.nbrOther.left: ${res.nbrOther.left.replace(/\r\n/g,' ')} res.nbr.right: ${res.nbr.right.replace(/\r\n/g,' ')} nbrOther.right: ${res.nbrOther.right.replace(/\r\n/g,' ')}`);
     expect(res.dist.duplicate).toEqual(t.expectedDuplicate);
 });
 
-
-describe('doo', () => {
-    test('foo', () => {
-        expect(1).toBe(2);
-    })
-})
 

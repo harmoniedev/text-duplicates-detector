@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const diff = require('fast-diff');
-const helpers = require('./helpers');
+const helpers = require('@harmon.ie/email-util/nlp-helpers');
 
 //TODO: [harmon.ie] Update: <var text> --> Enough to detect match in either side (left/right) of the topic
 //TODO:Q: return also diff of left+right ? Can 
