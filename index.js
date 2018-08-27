@@ -108,9 +108,16 @@ function calcNbrDistShortInSubject(dst) {
   return dst;
 }
 
-function calcNbrDistLong(nbr1, nbr2, inSubject) {
-  const nlLeftInfo = textDist(nbr1.nlLeft, nbr2.nlLeft, inSubject);
-  const nlRightInfo = textDist(nbr1.nlRight, nbr2.nlRight, inSubject);
+
+function calcInitialDst(nbr1, nbr2, inSubject) {
+  const leftInfo = textDist(nbr1.left, nbr2.left, inSubject);
+  const rightInfo = textDist(nbr1.right, nbr2.right, inSubject);
+  return [leftInfo.diffRatio, rightInfo.diffRatio];
+}
+ 
+function calcNbrDistLong(aLeft, bLeft, aRight, bRight, inSubject) {
+  const nlLeftInfo = textDist(aLeft, bLeft, inSubject);
+  const nlRightInfo = textDist(aRight, bRight, inSubject);
   const duplicate = Math.min(nlLeftInfo.diffRatio, nlRightInfo.diffRatio) <= DUPLICATE_THRESHOLD;
   
   return {
@@ -120,11 +127,6 @@ function calcNbrDistLong(nbr1, nbr2, inSubject) {
    };
 }
 
-function calcInitialDst(nbr1, nbr2, inSubject) {
-  const leftInfo = textDist(nbr1.left, nbr2.left, inSubject);
-  const rightInfo = textDist(nbr1.right, nbr2.right, inSubject);
-  return [leftInfo.diffRatio, rightInfo.diffRatio];
-}
 
 function isDmallDst(leftDiff, rightDiff) {
   return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD
@@ -146,7 +148,7 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
       return { leftDiff, rightDiff, duplicate: true };
     }
   } else {
-    return {leftDiff, rightDiff, ...calcNbrDistLong(nbr1, nbr2, inSubject)};
+    return {leftDiff, rightDiff, ...calcNbrDistLong(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject)};
   }
 }
 
