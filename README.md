@@ -54,32 +54,17 @@ TBD
 
 ##	API Reference
 
-### getSignature(body,from,bodyNoSig)
-returns - { signature: the signature text, bodyNoSig: see optional bodyNoSig parameter below }
-body - contains the email body text 
-from - optional: contains email and displayName used to detect the sender name in the signature. (see example in Usage)
-bodyNoSig - optional: if true and the signature is found, the return object includes bodyNoSig : the email text until the beginning of the signature. 
 
-### removeSignature(body,from)
-returns - the email text until the beginning of the signature
-body - contains the email body text 
-from - optional: contains email and displayName used to detect the sender name in the signature. (see example in Usage)
-
- 
 ## Limitations and known issues
 
 ### Limitations
 
 - Only the english language is supported.
-- This library is intented to be used in the context of entreprise emails. It was not tested with personal emails. It does, however detects simple personal signatures, such as Thanks\n<Sender Name> or only <Sender Name>
-- This library doesn't detect some signatures that may appear in automated emails (non personal signatures). 
-- Some material that appear at the end of an email, and is very similar to signatures, may be detected as signature. For instance, online meeting details (containing phone numbers, urls, emails) 
+
 
 ### Known issues
 
-- When a signature contains several long lines, such as job title, address or legal disclaimer, it might cause the signature not to be detected. The reason is that the algorithm penalizes long lines in signatures. The algorithms still detects many sigantures that contains long lines and we believe (and hope) that large number of long lines is not very common.
-- Forwarded email thread with several messages and several signatures: the signatures are not detected in this case.
-
+- Only the first instance of the phrase in the texts are taken into account.
 
 ## How does it work ?
 
