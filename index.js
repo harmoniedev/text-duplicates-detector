@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const diff = require('fast-diff');
 const helpers = require('@harmon.ie/email-util/nlp-helpers');
 
@@ -67,8 +66,8 @@ function smartDiff(text1, text2) {
       return res;
     }
   }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
-
 }
+
 function safeDivide(a, b) {
   if (b === 0) { return a; }
   return a / b;
@@ -108,33 +107,25 @@ function calcNbrDistShortInSubject(dst) {
   return dst;
 }
 
-
-function calcInitialDst(nbr1, nbr2, inSubject) {
-  const leftInfo = textDist(nbr1.left, nbr2.left, inSubject);
-  const rightInfo = textDist(nbr1.right, nbr2.right, inSubject);
-  return [leftInfo.diffRatio, rightInfo.diffRatio];
-}
- 
-function calcNbrDistLong(aLeft, bLeft, aRight, bRight, inSubject) {
-  const nlLeftInfo = textDist(aLeft, bLeft, inSubject);
-  const nlRightInfo = textDist(aRight, bRight, inSubject);
-  const duplicate = Math.min(nlLeftInfo.diffRatio, nlRightInfo.diffRatio) <= DUPLICATE_THRESHOLD;
-  
-  return {
-    nlLeft: nlLeftInfo.diffRatio, 
-    nlRight: nlRightInfo.diffRatio,
-    duplicate
-   };
-}
-
-
-function isDmallDst(leftDiff, rightDiff) {
+function isSmallDiff(leftDiff, rightDiff) {
   return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD
 }
 
+function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
+  const nlLeftInfo = textDist(aLeft, bLeft, inSubject);
+  const nlRightInfo = textDist(aRight, bRight, inSubject);
+  const duplicate = isSmallDiff(nlLeftInfo.diffRatio, nlRightInfo.diffRatio);
+
+  return {
+    nlLeft: nlLeftInfo.diffRatio,
+    nlRight: nlRightInfo.diffRatio,
+    duplicate
+  };
+}
+
 function nbrDist(nbr1, nbr2, inSubject = false) {
-  const [leftDiff, rightDiff] = calcInitialDst(nbr1, nbr2, inSubject);
-  if (isDmallDst(leftDiff, rightDiff)) {
+  const dst = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
+  if (dst.duplicate) {
     //Problem: Subject duplicates are based on small nbr size (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
     //We want the 'Industry News' to match but Project Venice - not to match (2 different subjects mentioning the same topic)
     //sub: RE: Harmon.ie/Project Venice ("Euclid") sync oSub: RE: Harmon.ie/Project Venice sync  
@@ -145,10 +136,10 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
     if (inSubject) {
       calcNbrDistShortInSubject(dst);
     } else {
-      return { leftDiff, rightDiff, duplicate: true };
+      return dst;
     }
   } else {
-    return {leftDiff, rightDiff, ...calcNbrDistLong(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject)};
+    return { ...dst, ...calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject) };
   }
 }
 
@@ -172,4 +163,3 @@ module.exports = {
   getNbr,
   nbrDist,
 }
-
