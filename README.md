@@ -15,7 +15,7 @@ For instance, if we look at two pieces of text:
 
 >The last **period** was not exciting due to the negociations that lead nowhere, until an intersting **opportunity** for IBM occurred last week.
 
-In the nighborhood of **period**, the texts are not similar while in the neighborhood of **opportunity**, the texts are similar.
+In the neighborhood of **period**, the texts are not similar while in the neighborhood of **opportunity**, the texts are similar.
 
 We say that the occurences of **period** are not duplicate while the occurrences of **opportunity** are duplicate.
 
@@ -39,25 +39,15 @@ yarn add @harmon.ie/duplicate-text-detector
 
 
 ```js
-const signature = require('@harmon.ie/duplicate-text-detector');
+const dup = require('@harmon.ie/duplicate-text-detector');
 
-const text1 = `Dave,
+const text1 = `After a long period of inactivity, an intersting opportunity for IBM occurred last week.`;
+const text2 = `The last period was not exciting due to the negociations that lead nowhere, until an intersting opportunity for IBM occurred last week.`;
 
-See ticket #50366
-
-Why do we issue this
-
-Ron
-
-Ron Smith
-VP, Product Solutions
-acme.com<http://acme.com/>
-714.949.3001, rons@acme.com`;
-  
-const from = { email: 'rons@acme.com', displayName: 'Ron Smith' };
-const ret = signature.getSignature(body,from);
-
+dup.calcDuplicationDetails(text1, text2, 'period'); // returns false
+dup.calcDuplicationDetails(text1, text2, 'opportunity'); // returns true
 ```
+
 ### Browser 
 
 TBD
