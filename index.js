@@ -108,30 +108,31 @@ function calcNbrDistShortInSubject(dst) {
   return dst;
 }
 
-function calcNbrDistLong(nbr1, nbr2, inSubject, dst) {
+function calcNbrDistLong(nbr1, nbr2, inSubject) {
   const nlLeftInfo = textDist(nbr1.nlLeft, nbr2.nlLeft, inSubject);
   const nlRightInfo = textDist(nbr1.nlRight, nbr2.nlRight, inSubject);
-  const nlDst = { nlLeft: nlLeftInfo.diffRatio, nlRight: nlRightInfo.diffRatio };
-
-  if (Math.min(nlDst.nlLeft, nlDst.nlRight) <= DUPLICATE_THRESHOLD) {
-    nlDst.duplicate = true;
-  }
-  return { ...dst, ...nlDst };
+  const duplicate = Math.min(nlLeftInfo.diffRatio, nlRightInfo.diffRatio) <= DUPLICATE_THRESHOLD;
+  
+  return {
+    nlLeft: nlLeftInfo.diffRatio, 
+    nlRight: nlRightInfo.diffRatio,
+    duplicate
+   };
 }
 
 function calcInitialDst(nbr1, nbr2, inSubject) {
   const leftInfo = textDist(nbr1.left, nbr2.left, inSubject);
   const rightInfo = textDist(nbr1.right, nbr2.right, inSubject);
-  return { left: leftInfo.diffRatio, right: rightInfo.diffRatio, duplicate: false };
+  return [leftInfo.diffRatio, rightInfo.diffRatio];
 }
 
-function isDmallDst(dst) {
-  return Math.min(dst.left, dst.right) <= DUPLICATE_THRESHOLD
+function isDmallDst(leftDiff, rightDiff) {
+  return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD
 }
 
 function nbrDist(nbr1, nbr2, inSubject = false) {
-  const dst = calcInitialDst(nbr1, nbr2, inSubject);
-  if (isDmallDst(dst)) {
+  const [leftDiff, rightDiff] = calcInitialDst(nbr1, nbr2, inSubject);
+  if (isDmallDst(leftDiff, rightDiff)) {
     //Problem: Subject duplicates are based on small nbr size (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
     //We want the 'Industry News' to match but Project Venice - not to match (2 different subjects mentioning the same topic)
     //sub: RE: Harmon.ie/Project Venice ("Euclid") sync oSub: RE: Harmon.ie/Project Venice sync  
@@ -142,10 +143,10 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
     if (inSubject) {
       calcNbrDistShortInSubject(dst);
     } else {
-      return { ...dst, duplicate: true };
+      return { leftDiff, rightDiff, duplicate: true };
     }
   } else {
-    return calcNbrDistLong(nbr1, nbr2, inSubject, dst);
+    return {leftDiff, rightDiff, ...calcNbrDistLong(nbr1, nbr2, inSubject)};
   }
 }
 

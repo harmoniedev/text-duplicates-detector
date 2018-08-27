@@ -13,7 +13,7 @@ For instance, if we look at two pieces of text:
 
 >After a long **period** of inactivity, an intersting **opportunity** for IBM occurred last week.
 
->The last **period** was not exciting due to the negociations that lead nowhere, until an intersting **opportunity** for IBM occurred last week.
+>The last **period** was not exciting due to the negociations that lead nowhere, until an intersting **opportunity** for Google occurred last week.
 
 In the neighborhood of **period**, the texts are not similar while in the neighborhood of **opportunity**, the texts are similar.
 
@@ -42,10 +42,10 @@ yarn add @harmon.ie/duplicate-text-detector
 const dup = require('@harmon.ie/duplicate-text-detector');
 
 const text1 = `After a long period of inactivity, an intersting opportunity for IBM occurred last week.`;
-const text2 = `The last period was not exciting due to the negociations that lead nowhere, until an intersting opportunity for IBM occurred last week.`;
+const text2 = `The last period was not exciting due to the negociations that lead nowhere, until an intersting opportunity for Google occurred last week.`;
 
-dup.calcDuplicationDetails(text1, text2, 'period'); // returns false
-dup.calcDuplicationDetails(text1, text2, 'opportunity'); // returns true
+dup.isDuplicate(text1, text2, 'period'); // returns false
+dup.isDuplicate(text1, text2, 'opportunity'); // returns true
 ```
 
 ### Browser 
