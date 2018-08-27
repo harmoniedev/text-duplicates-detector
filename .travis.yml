@@ -1,5 +1,5 @@
 env:
-  - CODECOV_TOKEN="c8a5627e-162e-4d81-900d-9e073814cbe8"
+  - CODECOV_TOKEN="0225934d-53d3-4230-a628-3b7a30d14fff"
 language: node_js
 node_js:
   - "10"
