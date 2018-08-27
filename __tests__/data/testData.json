@@ -1,5 +1,19 @@
 [
   {
+    "testName": "period and opportunity - period",
+    "a": "The last period was not exciting due to the negociations that lead nowhere, until an intersting opportunity for IBM occurred last week.",
+    "b":"After a long period of inactivity, an intersting opportunity for IBM occurred last week.",
+    "topic": "period",
+    "expectedDuplicate": false
+  },
+  {
+    "testName": "period and opportunity - period",
+    "a": "The last period was not exciting due to the negociations that lead nowhere, until an intersting opportunity for IBM occurred last week.",
+    "b":"After a long period of inactivity, an intersting opportunity for IBM occurred last week.",
+    "topic": "opportunity",
+    "expectedDuplicate": true
+  },
+  {
     "testName": "zendesk - Assignee",
     "a": "Status  Pending\r\nRequester       Stephanie Forman\r\nCCs     Alex Beaudoin, Ram Tagher, Ron Johnsen\r\nGroup   Support\r\nAssignee        Alex Beaudoin\r\nPriority        -",
     "b": "Status  Pending\r\nRequester       Jumanji Cohen\r\nCCs     Alex Beaudoin, Dekel Cohen\r\nGroup   Support\r\nAssignee        Dimitri\r\nPriority        -",

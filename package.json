@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Detects text duplication",
   "scripts": {
-    "test": "jest --watchAll"
+      "test": "jest --coverage",
+      "watch-test": "jest --watchAll"
   },
   "author": "Harmon.ie",
   "dependencies": {
