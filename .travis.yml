@@ -1,0 +1,9 @@
+env:
+  - CODECOV_TOKEN="c8a5627e-162e-4d81-900d-9e073814cbe8"
+language: node_js
+node_js:
+  - "10"
+cache:
+  yarn: true
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
