@@ -148,7 +148,13 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
 function calcDuplicationDetails(text1, text2, topic, isSubject = false) {
   const nbr1 = getNbr(topic, text1, isSubject);
   const nbr2 = getNbr(topic, text2, isSubject);
-
+  if(nbr1 === null || nbr2 === nul) {
+    return {
+      dist: {
+        duplicate: false
+      }
+    }
+  }
   const dist = nbrDist(nbr1, nbr2, isSubject);
 
   return { dist, nbr: nbr1, nbrOther: nbr2 };
