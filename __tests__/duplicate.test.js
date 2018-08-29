@@ -9,3 +9,7 @@ testMe.describeJsonData('duplicate text tests', testData, (t) => {
 });
 
 
+test('phrase not found', () => {
+    const res = isDuplicate('', '', 'ppp');
+    expect(res).toBe(false);
+});

@@ -96,15 +96,15 @@ function textDist(text1, text2, inSubject = false) {
 
 const DUPLICATE_THRESHOLD = 0.3;
 
-function calcNbrDistShortInSubject(dst) {
-  const leftMinimalLenDup = dst.left <= DUPLICATE_THRESHOLD &&
+function calcNbrDistShortInSubject(leftInfo, rightInfo) {
+  const leftMinimalLenDup = leftInfo.diffRatio <= DUPLICATE_THRESHOLD &&
     leftInfo.lenCompared >= MIN_LEN_COMPARED || rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared);
 
-  const rightMinimalLenDup = dst.right <= DUPLICATE_THRESHOLD &&
+  const rightMinimalLenDup = rightInfo.diffRatio <= DUPLICATE_THRESHOLD &&
     rightInfo.lenCompared >= MIN_LEN_COMPARED || leftInfo.prefixMatch >= (MIN_LEN_COMPARED - rightInfo.lenCompared);
 
-  dst.duplicate = leftMinimalLenDup || rightMinimalLenDup;
-  return dst;
+  const duplicate = leftMinimalLenDup || rightMinimalLenDup;
+  return { leftInfo, rightInfo, duplicate };
 }
 
 function isSmallDiff(leftDiff, rightDiff) {
@@ -112,20 +112,20 @@ function isSmallDiff(leftDiff, rightDiff) {
 }
 
 function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
-  const nlLeftInfo = textDist(aLeft, bLeft, inSubject);
-  const nlRightInfo = textDist(aRight, bRight, inSubject);
-  const duplicate = isSmallDiff(nlLeftInfo.diffRatio, nlRightInfo.diffRatio);
+  const leftInfo = textDist(aLeft, bLeft, inSubject);
+  const rightInfo = textDist(aRight, bRight, inSubject);
+  const duplicate = isSmallDiff(leftInfo.diffRatio, rightInfo.diffRatio);
 
   return {
-    nlLeft: nlLeftInfo.diffRatio,
-    nlRight: nlRightInfo.diffRatio,
+    leftInfo,
+    rightInfo,
     duplicate
   };
 }
 
 function nbrDist(nbr1, nbr2, inSubject = false) {
-  const dst = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
-  if (dst.duplicate) {
+  const { leftInfo, rightInfo, duplicate } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
+  if (duplicate) {
     //Problem: Subject duplicates are based on small nbr size (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
     //We want the 'Industry News' to match but Project Venice - not to match (2 different subjects mentioning the same topic)
     //sub: RE: Harmon.ie/Project Venice ("Euclid") sync oSub: RE: Harmon.ie/Project Venice sync  
@@ -134,12 +134,13 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
 
     //*** TODO:Debug:Remove:False
     if (inSubject) {
-      calcNbrDistShortInSubject(dst);
+      return calcNbrDistShortInSubject(leftInfo, rightInfo);
     } else {
-      return dst;
+      return { leftInfo, rightInfo, duplicate };
     }
   } else {
-    return { ...dst, ...calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject) };
+    const { leftInfo: nlLeftInfo, rightInfo: nlRightInfo, duplicate: nlDuplicate } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject)
+    return { duplicate: nlDuplicate, nlLeftInfo, nlRightInfo, leftInfo, rightInfo };
   }
 }
 
@@ -147,8 +148,14 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
 function calcDuplicationDetails(text1, text2, topic, isSubject = false) {
   const nbr1 = getNbr(topic, text1, isSubject);
   const nbr2 = getNbr(topic, text2, isSubject);
-
-  const dist = nbrDist(nbr1, nbr2);
+  if(nbr1 === null || nbr2 === null) {
+    return {
+      dist: {
+        duplicate: false
+      }
+    }
+  }
+  const dist = nbrDist(nbr1, nbr2, isSubject);
 
   return { dist, nbr: nbr1, nbrOther: nbr2 };
 }
