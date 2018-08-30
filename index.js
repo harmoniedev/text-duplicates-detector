@@ -1,8 +1,9 @@
 const diff = require('fast-diff');
 const helpers = require('@harmon.ie/email-util/nlp-helpers');
 
-//TODO: [harmon.ie] Update: <var text> --> Enough to detect match in either side (left/right) of the topic
-//TODO:Q: return also diff of left+right ? Can 
+// TODO: [harmon.ie] Update: <var text> --> Enough to detect match in either side 
+// (left/right) of the topic
+// TODO:Q: return also diff of left+right ?
 
 function getTextAfterNewLines(str) {
   const lines = str.match(/[^\r\n]+/g);
@@ -20,19 +21,23 @@ function calcNbrLeftAndRight(text, m, nbrSize) {
 }
 
 function getNbrNewLines(left, right) {
-  // Add newLines (left and right) nbrs for Forms duplicate detection 
-  // (Problem: Forms may contain much variable text between their duplicate fields) 
+  // Add newLines (left and right) nbrs for Forms duplicate detection
+  // (Problem: Forms may contain much variable text between their duplicate fields)
 
   return {
     nlLeft: getTextAfterNewLines(left),
-    nlRight: getTextAfterNewLines(right)
+    nlRight: getTextAfterNewLines(right),
   };
 }
 
-function getNbr(topicText, text, inSubject) {
-  if (inSubject) {
-    text = helpers.getNormalizedSubject(text);
+function getNbr(topicText, _text, inSubject) {
+  function normalizedText() {
+    if (inSubject) {
+      return helpers.getNormalizedSubject(_text);
+    }
+    return _text;
   }
+  const text = normalizedText();
   // Find the topicText and extract its surrounding window (+-N characters)
   const topicInText = helpers.findTopicInText(topicText, text);
   if (topicInText === null) {
@@ -41,7 +46,12 @@ function getNbr(topicText, text, inSubject) {
 
   const { left, right } = calcNbrLeftAndRight(text, topicInText, inSubject ? 20 : 70);
   const { nlLeft, nlRight } = getNbrNewLines(left, right);
-  return { left, right, nlLeft, nlRight };
+  return {
+    left,
+    right,
+    nlLeft,
+    nlRight,
+  };
 }
 
 function convertTexts(texts) {
@@ -57,13 +67,13 @@ function smartDiff(text1, text2) {
     if (startPos === 0) {
       res.cntMatch += chars.length;
       return res;
-    } else {
-      if (res.cntDiff === 0) {
-        res.prefixMatch = res.cntMatch; //Record the len of prefix match (from left to right, before first diff)
-      }
-      res.cntDiff += chars.length;
-      return res;
     }
+    if (res.cntDiff === 0) {
+      // Record the len of prefix match (from left to right, before first diff)
+      res.prefixMatch = res.cntMatch;
+    }
+    res.cntDiff += chars.length;
+    return res;
   }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
 }
 
@@ -90,19 +100,19 @@ function textDist(text1, text2, inSubject) {
 
 const DUPLICATE_THRESHOLD = 0.3;
 
-function calcNbrDistShortInSubject(leftInfo, rightInfo) {
+function calcNbrDistShortInSubject(myLeftInfo, myRightInfo) {
   function inner(leftInfo, rightInfo) {
     return (leftInfo.diffRatio <= DUPLICATE_THRESHOLD)
-    && ((leftInfo.lenCompared >= MIN_LEN_COMPARED)
-      || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)));
+      && ((leftInfo.lenCompared >= MIN_LEN_COMPARED)
+        || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)));
   }
 
-  const duplicate = inner(leftInfo, rightInfo) || inner(rightInfo, leftInfo);
-  return { leftInfo, rightInfo, duplicate };
+  const duplicate = inner(myLeftInfo, myRightInfo) || inner(myRightInfo, myLeftInfo);
+  return { myLeftInfo, myRightInfo, duplicate };
 }
 
 function isSmallDiff(leftDiff, rightDiff) {
-  return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD
+  return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD;
 }
 
 function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
@@ -113,45 +123,55 @@ function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
   return {
     leftInfo,
     rightInfo,
-    duplicate
+    duplicate,
   };
 }
 
 function nbrDist(nbr1, nbr2, inSubject) {
   const { leftInfo, rightInfo, duplicate } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
   if (duplicate) {
-    //Problem: Subject duplicates are based on small nbr size (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
-    //We want the 'Industry News' to match but Project Venice - not to match (2 different subjects mentioning the same topic)
-    //sub: RE: Harmon.ie/Project Venice ("Euclid") sync oSub: RE: Harmon.ie/Project Venice sync  
-    //If inSubject duplicate is based on < MIN_LEN_COMPARED from left/right --> require the other side (right/left) will match the remaining
+    // Problem: Subject duplicates are based on small nbr size
+    // (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
+    // We want the 'Industry News' to match but Project Venice - not to match
+    // (2 different subjects mentioning the same topic)
+    // sub: RE: Harmon.ie/Project Venice ("Euclid") sync oSub: RE: Harmon.ie/Project Venice sync
+    // If inSubject duplicate is based on < MIN_LEN_COMPARED from left/right --> 
+    // require the other side (right/left) will match the remaining
     // chars to complete to MIN_LEN_COMPARED
 
-    //*** TODO:Debug:Remove:False
+    // TODO:Debug:Remove:False
     if (inSubject) {
       return calcNbrDistShortInSubject(leftInfo, rightInfo);
-    } else {
-      return { leftInfo, rightInfo, duplicate };
     }
-  } else {
-    const { leftInfo: nlLeftInfo, rightInfo: nlRightInfo, duplicate: nlDuplicate } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject)
-    return { duplicate: nlDuplicate, nlLeftInfo, nlRightInfo, leftInfo, rightInfo };
+    return { leftInfo, rightInfo, duplicate };
   }
+  const { leftInfo: nlLeftInfo, rightInfo: nlRightInfo, duplicate: nlDuplicate } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject);
+  return {
+    duplicate: nlDuplicate,
+    nlLeftInfo,
+    nlRightInfo,
+    leftInfo,
+    rightInfo,
+  };
 }
 
+function convertToArray(t) {
+  if (!Array.isArray(t)) {
+    return [t, t];
+  }
+  return t;
+}
 
 function calcDuplicationDetails(text1, text2, topic, isSubject) {
-  if (!Array.isArray(topic)) {
-    topic = [topic, topic];
-  }
-  const [topic1, topic2] = topic;
+  const [topic1, topic2] = convertToArray(topic);
   const nbr1 = getNbr(topic1, text1, isSubject);
   const nbr2 = getNbr(topic2, text2, isSubject);
   if (nbr1 === null || nbr2 === null) {
     return {
       dist: {
-        duplicate: false
-      }
-    }
+        duplicate: false,
+      },
+    };
   }
   const dist = nbrDist(nbr1, nbr2, isSubject);
 
@@ -179,4 +199,4 @@ module.exports = {
   calcDuplicationDetails,
   getNbr,
   nbrDist,
-}
+};
