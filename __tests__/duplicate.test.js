@@ -1,4 +1,4 @@
-const {isDuplicate} = require('../index');
+const { isDuplicate, numOfDuplicates } = require('../index');
 const testMe = require('@harmon.ie/email-util/testsUtils');
 const testData = require('./data/testData.json');
 
@@ -12,4 +12,22 @@ testMe.describeJsonData('duplicate text tests', testData, (t) => {
 test('phrase not found', () => {
     const res = isDuplicate('', '', 'ppp');
     expect(res).toBe(false);
+});
+
+test('isDuplicate with different topics', () => {
+    const textA = "Agents seems really really down";
+    const textB = "Agents of the Mall seems really really down";
+    const topicA = "Agents";
+    const topicB = "Agents of the Mall"
+    const res = isDuplicate(textA, textB, [topicA, topicB]);
+    expect(res).toBe(true);
+
+});
+
+
+test('numOfDuplicates', () => {
+    const text = "New Request a Quote Opportunity Created - EaP";
+    const phrase = "Opportunity";
+    const textAndPhrases = Array(5).fill([text, phrase]);
+    expect(numOfDuplicates([text, phrase], textAndPhrases)).toBe(5);
 });

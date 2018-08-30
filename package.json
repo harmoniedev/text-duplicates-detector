@@ -1,6 +1,6 @@
 {
   "name": "@harmon.ie/duplicate-text-detector",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Detects text duplication",
   "scripts": {
     "test": "jest --coverage",

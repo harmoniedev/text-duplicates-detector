@@ -36,7 +36,6 @@ function getNbr(topicText, text, inSubject) {
   // Find the topicText and extract its surrounding window (+-N characters)
   const topicInText = helpers.findTopicInText(topicText, text);
   if (topicInText === null) {
-    console.warn(`getNbr: Failed to locate topicText:${topicText} in:\n${text}`);
     return null;
   }
 
@@ -146,8 +145,12 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
 
 
 function calcDuplicationDetails(text1, text2, topic, isSubject = false) {
-  const nbr1 = getNbr(topic, text1, isSubject);
-  const nbr2 = getNbr(topic, text2, isSubject);
+  if (!Array.isArray(topic)) {
+    topic = [topic, topic];
+  }
+  const [topic1, topic2] = topic;
+  const nbr1 = getNbr(topic1, text1, isSubject);
+  const nbr2 = getNbr(topic2, text2, isSubject);
   if(nbr1 === null || nbr2 === null) {
     return {
       dist: {
@@ -164,8 +167,20 @@ function isDuplicate(text1, text2, topic, isSubject = false) {
   return calcDuplicationDetails(text1, text2, topic, isSubject).dist.duplicate;
 }
 
+
+function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
+  return textAndPhrases.reduce((res, otherTextAndPhrase) => {
+      const [otherText, otherPhrase] = otherTextAndPhrase;
+      if (isDuplicate(text, otherText, [phrase, otherPhrase], inSubject)) {
+          return res + 1;
+      }
+      return res;
+  }, 0);
+}
+
 module.exports = {
   isDuplicate,
+  numOfDuplicates,
   calcDuplicationDetails,
   getNbr,
   nbrDist,
