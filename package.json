@@ -1,6 +1,6 @@
 {
   "name": "@harmon.ie/duplicate-text-detector",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Detects text duplication",
   "scripts": {
     "test": "jest --coverage",
@@ -13,6 +13,9 @@
     "lodash": "^4.17.5"
   },
   "devDependencies": {
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
     "jest": "^23.4.0"
   }
 }
