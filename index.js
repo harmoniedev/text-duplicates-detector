@@ -67,11 +67,6 @@ function smartDiff(text1, text2) {
   }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
 }
 
-function safeDivide(a, b) {
-  if (b === 0) { return a; }
-  return a / b;
-}
-
 function calcLenCompared(text1, text2) {
   const [lhs, rhs] = convertTexts([text1, text2]);
   const lenCompared = Math.min(lhs.length, rhs.length);
@@ -82,13 +77,13 @@ function minLenCompared(inSubject) {
   return inSubject ? MIN_LEN_COMPARED_SUBJECT : MIN_LEN_COMPARED;
 }
 
-function textDist(text1, text2, inSubject = false) {
+function textDist(text1, text2, inSubject) {
   const lenCompared = calcLenCompared(text1, text2);
   if (lenCompared <= minLenCompared(inSubject)) {
     return { diffRatio: 1, lenCompared: 0, prefixMatch: 0 };
   }
   const { cntDiff, cntMatch, prefixMatch } = smartDiff(text1, text2);
-  const diffRatio = safeDivide(cntDiff, cntDiff + cntMatch);
+  const diffRatio = cntDiff / (cntDiff + cntMatch);
 
   return { diffRatio, lenCompared, prefixMatch };
 }
@@ -96,13 +91,13 @@ function textDist(text1, text2, inSubject = false) {
 const DUPLICATE_THRESHOLD = 0.3;
 
 function calcNbrDistShortInSubject(leftInfo, rightInfo) {
-  const leftMinimalLenDup = leftInfo.diffRatio <= DUPLICATE_THRESHOLD &&
-    leftInfo.lenCompared >= MIN_LEN_COMPARED || rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared);
+  function inner(leftInfo, rightInfo) {
+    return (leftInfo.diffRatio <= DUPLICATE_THRESHOLD)
+    && ((leftInfo.lenCompared >= MIN_LEN_COMPARED)
+      || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)));
+  }
 
-  const rightMinimalLenDup = rightInfo.diffRatio <= DUPLICATE_THRESHOLD &&
-    rightInfo.lenCompared >= MIN_LEN_COMPARED || leftInfo.prefixMatch >= (MIN_LEN_COMPARED - rightInfo.lenCompared);
-
-  const duplicate = leftMinimalLenDup || rightMinimalLenDup;
+  const duplicate = inner(leftInfo, rightInfo) || inner(rightInfo, leftInfo);
   return { leftInfo, rightInfo, duplicate };
 }
 
@@ -122,7 +117,7 @@ function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
   };
 }
 
-function nbrDist(nbr1, nbr2, inSubject = false) {
+function nbrDist(nbr1, nbr2, inSubject) {
   const { leftInfo, rightInfo, duplicate } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
   if (duplicate) {
     //Problem: Subject duplicates are based on small nbr size (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
@@ -144,14 +139,14 @@ function nbrDist(nbr1, nbr2, inSubject = false) {
 }
 
 
-function calcDuplicationDetails(text1, text2, topic, isSubject = false) {
+function calcDuplicationDetails(text1, text2, topic, isSubject) {
   if (!Array.isArray(topic)) {
     topic = [topic, topic];
   }
   const [topic1, topic2] = topic;
   const nbr1 = getNbr(topic1, text1, isSubject);
   const nbr2 = getNbr(topic2, text2, isSubject);
-  if(nbr1 === null || nbr2 === null) {
+  if (nbr1 === null || nbr2 === null) {
     return {
       dist: {
         duplicate: false
@@ -170,11 +165,11 @@ function isDuplicate(text1, text2, topic, isSubject = false) {
 
 function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
   return textAndPhrases.reduce((res, otherTextAndPhrase) => {
-      const [otherText, otherPhrase] = otherTextAndPhrase;
-      if (isDuplicate(text, otherText, [phrase, otherPhrase], inSubject)) {
-          return res + 1;
-      }
-      return res;
+    const [otherText, otherPhrase] = otherTextAndPhrase;
+    if (isDuplicate(text, otherText, [phrase, otherPhrase], inSubject)) {
+      return res + 1;
+    }
+    return res;
   }, 0);
 }
 

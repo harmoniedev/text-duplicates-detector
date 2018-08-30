@@ -25,9 +25,17 @@ test('isDuplicate with different topics', () => {
 });
 
 
-test('numOfDuplicates', () => {
-    const text = "New Request a Quote Opportunity Created - EaP";
-    const phrase = "Opportunity";
-    const textAndPhrases = Array(5).fill([text, phrase]);
-    expect(numOfDuplicates([text, phrase], textAndPhrases)).toBe(5);
+describe('numOfDuplicates', () => {
+    test('all duplicates', () => {
+        const text = "New Request a Quote Opportunity Created - EaP";
+        const phrase = "Opportunity";
+        const textAndPhrases = Array(5).fill([text, phrase]);
+        expect(numOfDuplicates([text, phrase], textAndPhrases)).toBe(5);
+    });
+    test('no duplicates', () => {
+        const text = "New Request a Quote Opportunity Created - EaP";
+        const phrase = "Opportunity";
+        const textAndPhrases = Array(5).fill(["text", "phrase"]);
+        expect(numOfDuplicates([text, phrase], textAndPhrases)).toBe(0);
+    })
 });
