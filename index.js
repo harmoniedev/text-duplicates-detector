@@ -1,7 +1,7 @@
 const diff = require('fast-diff');
 const helpers = require('@harmon.ie/email-util/nlp-helpers');
 
-// TODO: [harmon.ie] Update: <var text> --> Enough to detect match in either side 
+// TODO: [harmon.ie] Update: <var text> --> Enough to detect match in either side
 // (left/right) of the topic
 // TODO:Q: return also diff of left+right ?
 
@@ -135,7 +135,7 @@ function nbrDist(nbr1, nbr2, inSubject) {
     // We want the 'Industry News' to match but Project Venice - not to match
     // (2 different subjects mentioning the same topic)
     // sub: RE: Harmon.ie/Project Venice ("Euclid") sync oSub: RE: Harmon.ie/Project Venice sync
-    // If inSubject duplicate is based on < MIN_LEN_COMPARED from left/right --> 
+    // If inSubject duplicate is based on < MIN_LEN_COMPARED from left/right -->
     // require the other side (right/left) will match the remaining
     // chars to complete to MIN_LEN_COMPARED
 
