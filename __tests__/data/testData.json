@@ -15,8 +15,8 @@
   },
   {
     "testName": "zendesk - Assignee",
-    "a": "Status  Pending\r\nRequester       Stephanie Forman\r\nCCs     Alex Beaudoin, Ram Tagher, Ron Johnsen\r\nGroup   Support\r\nAssignee        Alex Beaudoin\r\nPriority        -",
-    "b": "Status  Pending\r\nRequester       Jumanji Cohen\r\nCCs     Alex Beaudoin, Dekel Cohen\r\nGroup   Support\r\nAssignee        Dimitri\r\nPriority        -",
+    "a": "Status  Pending\r\nRequester       Stephanie Smith\r\nCCs     Alex Beaudoin, Ram Tagher, Ron Johnsen\r\nGroup   Support\r\nAssignee        Alex Beaudoin\r\nPriority        -",
+    "b": "Status  Pending\r\nRequester       John Cohen\r\nCCs     Alex Beaudoin, Dekel Cohen\r\nGroup   Support\r\nAssignee        Dimitri\r\nPriority        -",
     "topic": "Assignee",
     "expectedDuplicate": true
   },
@@ -73,7 +73,7 @@
   {
     "testName": "VoiceMail - Office Voicemail",
     "a": "Voicemail Message (Dekel AAA > AAA David) From:382\r\nIP Office Voicemail redirected message",
-    "b": "Voicemail Message (AAA Gal > AAA David) From:482\r\nIP Office Voicemail redirected message",
+    "b": "Voicemail Message (BBBBB Gal > AAA David) From:482\r\nIP Office Voicemail redirected message",
     "topic": "Office Voicemail",
     "expectedDuplicate": true
   },
@@ -131,8 +131,8 @@
   },
   {
     "testName": "Linkedin URL",
-    "a": "connect with me on LinkedIn<https://www.linkedin.com/in/diana-christopherson-b8a3003/>",
-    "b": "connect with me on LinkedIn<https://www.linkedin.com/in/diana-christopherson-b8a3003/>",
+    "a": "connect with me on LinkedIn<https://www.linkedin.com/in/diana-b8a3003/>",
+    "b": "connect with me on LinkedIn<https://www.linkedin.com/in/davids-Johnson-a27dfh/>",
     "topic": "LinkedIn",
     "expectedDuplicate": true
   },
@@ -151,5 +151,62 @@
     "b": "[harmon.ie] Update: Outlook runs out of memory",
     "topic": "Update",
     "expectedDuplicate": true
+  },
+  {
+    "testName" :"LALA PR missed sig",
+    "isSubject": false,
+    "a" : "Hi David \r\nPlease find attached the agenda for today’s call.  Talk to you soon!  Thanks so much!\r\n\r\nJohn Smith\r\nSenior Vice President\r\nLALA PR\r\nO: 123-123-1234\r\nM: 123-123-1234\r\nE: john@lalapr.com<mailto:<john@lalapr>\r\n",
+    "b" : "Are you free to speak tomorrow? I  want to talk to you about the launch. Please let me know. Thanks!\r\n \r\nJohn Smith\r\nSenior Vice President\r\nLALA PR\r\nO: 123-123-1234\r\nM: 123-123-1234\r\nE: john@lalapr.com<mailto:<john@lalapr>\r\n",
+    "topic" : "PR",
+    "expectedDuplicate" : true
+  },
+  {
+    "testName" :"harmonie inustry news",
+    "isSubject": true,
+    "a" : "FW: harmon.ie Industry News - April 31",
+    "b" : "harmon.ie Industry News - March 20",
+    "topic" : "Industry News",
+    "expectedDuplicate" : true
+  },
+  {
+    "testName" :"harmonie inustry news - in body",
+    "isSubject": false,
+    "a" : "FW: harmon.ie Industry News - April 31",
+    "b" : "harmon.ie Industry News - March 20",
+    "topic" : "Industry News",
+    "expectedDuplicate" : false
+  },
+  {
+    "testName" :"Project Vellya weekly meetings",
+    "isSubject": true,
+    "a" : "RE: Harmon.ie/Project Vellya sync",
+    "b" : "Harmon.ie/Project Vellya (\"BDlid\") sync",
+    "topic" : "Project Vella",
+    "expectedDuplicate" : false
+  },
+  {
+    "testName" :"SalesForce update - Opportunity link",
+    "isSubject": false,
+    "a" : "Job title:IT Manager\r\nCompany Size: Small Enterprise (1000-3999)\r\nCurrent Segmentation: Suspected Influencer\r\n\r\n\r\nHow many licenses would you like to evaluate:  5\r\n\r\n\r\n\r\nPotential seats:\r\n\r\n\r\nEmail: pascal.flenet@cp.com\r\nPhone Number: 1234567890\r\nCountry: France\r\nState:\r\n\r\nOpportunity link: https://aa.salesforce.com/TRNL987u1\r\n\r\n\r\n\r\n",
+    "b" : "Job title:Head IT\r\nCompany Size: Medium (500-1000)\r\nCurrent Segmentation: Suspected Influencer\r\n\r\n\r\nHow many licenses would you like to evaluate:  10\r\n\r\n\r\n\r\nPotential seats:\r\n\r\n\r\nEmail: lala@lala.com\r\nPhone Number: 998877445\r\nCountry: Germany\r\nState:\r\n\r\nOpportunity link: https://aa.salesforce.com/YTGC00157\r\n\r\n\r\n\r\n",
+    "topic" : "Opportunity link",
+    "expectedDuplicate" : true
+  },
+  {
+    "testName" :"SalesForce update - Job title",
+    "isSubject": false,
+    "a" : "The following IT Evaluation Request opportunity was created for:\r\n\r\nContact Name:  AAA BBB\r\nAccount Name: XXXXXX\r\nJob title:Sales Manager\r\nCompany Size: Small Enterprise (1000-3999)\r\nCurrent Segmentation: Suspected Influencer\r\n\r\n\r\nHow many licenses would you like to evaluate:  5\r\n\r\n\r\n\r\nPotential seats:\r\n\r\n\r\nEmail: aa@aa.com.com\r\n",
+    "b" : "The following IT Evaluation Request opportunity was created for:\r\n\r\nContact Name:  DDD EEE\r\nAccount Name: YYY YYYY \r\nJob title:Head IT\r\nCompany Size: Medium (500-1000)\r\nCurrent Segmentation: Suspected Influencer\r\n\r\n\r\nHow many licenses would you like to evaluate:  10\r\n\r\n\r\n\r\nPotential seats:\r\n\r\n\r\nEmail: lala@lala.com",
+    "topic" : "Job title",
+    "expectedDuplicate" : true
+  },
+  {
+    "testName" :"Voicemail Message",
+    "isSubject": true,
+    "a" : "Voicemail Message (0014089891339 > Jacov Cohen) From:0014089891339",
+    "b" : "Voicemail Message (0018001346946 > Jacov Cohen) From:0018001346946",
+    "topic" : "Voicemail Message",
+    "expectedDuplicate" : true
   }
+
 ]
