@@ -5,12 +5,13 @@ const helpers = require('@harmon.ie/email-util/nlp-helpers');
 // (left/right) of the topic
 // TODO:Q: return also diff of left+right ?
 
+const LEN_TEXT_AFTER_NEW_LINE = 20;
 function getTextAfterNewLines(str) {
   const lines = str.match(/[^\r\n]+/g);
   if (!lines) {
     return '';
   }
-  return lines.reduce((res, line) => res + line.substr(0, 20), '');
+  return lines.reduce((res, line) => res + line.substr(0, LEN_TEXT_AFTER_NEW_LINE), '');
 }
 
 function calcNbrLeftAndRight(m, nbrSize) {
@@ -67,19 +68,25 @@ const MIN_LEN_COMPARED = 10;
 const MIN_LEN_COMPARED_SUBJECT = 6;
 
 function smartDiff(text1, text2) {
-  return diff(text1, text2)
-    .reduce((res, [hunkType, chars]) => {
+  const result = diff(text1, text2)
+    .reduce((res, [hunkType, hunk]) => {
       if (hunkType === diff.EQUAL) {
-        res.cntMatch += chars.length;
-        return res;
+        return {
+          ...res,
+          cntMatch: res.cntMatch + hunk.length,
+        };
       }
-      if (res.cntDiff === 0) {
-        // Record the len of prefix match (from left to right, before first diff)
-        res.prefixMatch = res.cntMatch;
-      }
-      res.cntDiff += chars.length;
-      return res;
+      return {
+        ...res,
+        // prefixMatch is the length of prefix match (from left to right, before first diff)
+        prefixMatch: (res.cntDiff === 0) ? res.cntMatch : res.prefixMatch,
+        cntDiff: res.cntDiff + hunk.length,
+      };
     }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
+  return {
+    ...result,
+    diffRatio: result.cntDiff / (result.cntDiff + result.cntMatch),
+  };
 }
 
 function calcLenCompared(text1, text2) {
@@ -97,8 +104,7 @@ function textDist(text1, text2, inSubject) {
   if (lenCompared <= minLenCompared(inSubject)) {
     return { diffRatio: 1, lenCompared: 0, prefixMatch: 0 };
   }
-  const { cntDiff, cntMatch, prefixMatch } = smartDiff(text1, text2);
-  const diffRatio = cntDiff / (cntDiff + cntMatch);
+  const { diffRatio, prefixMatch } = smartDiff(text1, text2);
 
   return { diffRatio, lenCompared, prefixMatch };
 }
