@@ -14,9 +14,13 @@ function getTextAfterNewLines(str) {
 }
 
 function calcNbrLeftAndRight(text, m, nbrSize) {
+  const startOfLeft = Math.max(m.idxStart - nbrSize, 0);
+  const endOfLeft = m.idxStart;
+  const startOfRight = m.idxStart + m.matchStr.length;
+  const endOfRight = Math.min(m.idxStart + m.matchStr.length + nbrSize, text.length - 1);
   return {
-    left: text.substring(Math.max(m.idxStart - nbrSize, 0), m.idxStart),
-    right: text.substring(m.idxStart + m.matchStr.length, Math.min(m.idxStart + m.matchStr.length + nbrSize, text.length - 1)),
+    left: text.substring(startOfLeft, endOfLeft),
+    right: text.substring(startOfRight, endOfRight),
   };
 }
 
@@ -128,7 +132,11 @@ function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
 }
 
 function nbrDist(nbr1, nbr2, inSubject) {
-  const { leftInfo, rightInfo, duplicate } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
+  const {
+    leftInfo,
+    rightInfo,
+    duplicate,
+  } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
   if (duplicate) {
     // Problem: Subject duplicates are based on small nbr size
     // (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
@@ -145,7 +153,11 @@ function nbrDist(nbr1, nbr2, inSubject) {
     }
     return { leftInfo, rightInfo, duplicate };
   }
-  const { leftInfo: nlLeftInfo, rightInfo: nlRightInfo, duplicate: nlDuplicate } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject);
+  const {
+    leftInfo: nlLeftInfo,
+    rightInfo: nlRightInfo,
+    duplicate: nlDuplicate,
+  } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject);
   return {
     duplicate: nlDuplicate,
     nlLeftInfo,
