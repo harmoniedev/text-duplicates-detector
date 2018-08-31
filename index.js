@@ -13,14 +13,15 @@ function getTextAfterNewLines(str) {
   return lines.reduce((res, line) => res + line.substr(0, 20), '');
 }
 
-function calcNbrLeftAndRight(text, m, nbrSize) {
+function calcNbrLeftAndRight(m, nbrSize) {
   const startOfLeft = Math.max(m.idxStart - nbrSize, 0);
   const endOfLeft = m.idxStart;
   const startOfRight = m.idxStart + m.matchStr.length;
-  const endOfRight = Math.min(m.idxStart + m.matchStr.length + nbrSize, text.length - 1);
+  const endOfRight = Math.min(m.idxStart + m.matchStr.length + nbrSize, m.text.length - 1);
   return {
-    left: text.substring(startOfLeft, endOfLeft),
-    right: text.substring(startOfRight, endOfRight),
+    left: m.text.substring(startOfLeft, endOfLeft),
+    right: m.text.substring(startOfRight, endOfRight),
+    phrase: m.matchStr,
   };
 }
 
@@ -34,7 +35,7 @@ function getNbrNewLines(left, right) {
   };
 }
 
-function getNbr(topicText, _text, inSubject) {
+function getNbr(phrase, _text, inSubject) {
   function normalizedText() {
     if (inSubject) {
       return helpers.getNormalizedSubject(_text);
@@ -43,12 +44,12 @@ function getNbr(topicText, _text, inSubject) {
   }
   const text = normalizedText();
   // Find the topicText and extract its surrounding window (+-N characters)
-  const topicInText = helpers.findTopicInText(topicText, text);
-  if (topicInText === null) {
+  const phraseInText = helpers.findTopicInText(phrase, text);
+  if (phraseInText === null) {
     return null;
   }
 
-  const { left, right } = calcNbrLeftAndRight(text, topicInText, inSubject ? 20 : 70);
+  const { left, right } = calcNbrLeftAndRight(phraseInText, inSubject ? 20 : 70);
   const { nlLeft, nlRight } = getNbrNewLines(left, right);
   return {
     left,
@@ -66,19 +67,19 @@ const MIN_LEN_COMPARED = 10;
 const MIN_LEN_COMPARED_SUBJECT = 6;
 
 function smartDiff(text1, text2) {
-  const delta = diff(text1, text2);
-  return delta.reduce((res, [startPos, chars]) => {
-    if (startPos === 0) {
-      res.cntMatch += chars.length;
+  return diff(text1, text2)
+    .reduce((res, [hunkType, chars]) => {
+      if (hunkType === diff.EQUAL) {
+        res.cntMatch += chars.length;
+        return res;
+      }
+      if (res.cntDiff === 0) {
+        // Record the len of prefix match (from left to right, before first diff)
+        res.prefixMatch = res.cntMatch;
+      }
+      res.cntDiff += chars.length;
       return res;
-    }
-    if (res.cntDiff === 0) {
-      // Record the len of prefix match (from left to right, before first diff)
-      res.prefixMatch = res.cntMatch;
-    }
-    res.cntDiff += chars.length;
-    return res;
-  }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
+    }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
 }
 
 function calcLenCompared(text1, text2) {
