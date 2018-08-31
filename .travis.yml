@@ -1,6 +1,8 @@
 env:
   - CODECOV_TOKEN="0225934d-53d3-4230-a628-3b7a30d14fff"
 language: node_js
+script:
+  - yarn run lint
 node_js:
   - "10"
 cache:
