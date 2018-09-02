@@ -112,16 +112,6 @@
     "topic": "iOS",
     "expectedDuplicate": true
   },
-
-  {
-    "testName": "SalesForce Opportunity Created - subject",
-    "a": "New Request a Quote Opportunity Created - EaP",
-    "b": "New Request a Quote Opportunity Created - Bowlinf Revision",
-    "isSubject": true,
-    "topic": "Opportunity",
-    "expectedDuplicate": true
-  },
-
   {
     "testName": "Keymetrics Connectivity issue",
     "a": "[Connectivity issue] Agents seems down",
@@ -137,22 +127,6 @@
     "expectedDuplicate": true
   },
   {
-    "testName": "Approve Check Run in Bill.com - Run",
-    "isSubject": true,
-    "a": "harmon.ie - Approve 3/19 Check Run in Bill.com",
-    "b": "harmon.ie - Approve 4/4 Check Run in Bill.com",
-    "topic": "Run",
-    "expectedDuplicate": true
-  },
-  {
-    "testName": "[harmon.ie] Update:",
-    "isSubject": true,
-    "a": "[harmon.ie] Update: Missing followed sites",
-    "b": "[harmon.ie] Update: Outlook runs out of memory",
-    "topic": "Update",
-    "expectedDuplicate": true
-  },
-  {
     "testName" :"LALA PR missed sig",
     "isSubject": false,
     "a" : "Hi David \r\nPlease find attached the agenda for today’s call.  Talk to you soon!  Thanks so much!\r\n\r\nJohn Smith\r\nSenior Vice President\r\nLALA PR\r\nO: 123-123-1234\r\nM: 123-123-1234\r\nE: john@lalapr.com<mailto:<john@lalapr>\r\n",
@@ -161,27 +135,11 @@
     "expectedDuplicate" : true
   },
   {
-    "testName" :"harmonie inustry news",
-    "isSubject": true,
-    "a" : "FW: harmon.ie Industry News - April 31",
-    "b" : "harmon.ie Industry News - March 20",
-    "topic" : "Industry News",
-    "expectedDuplicate" : true
-  },
-  {
     "testName" :"harmonie inustry news - in body",
     "isSubject": false,
     "a" : "FW: harmon.ie Industry News - April 31",
     "b" : "harmon.ie Industry News - March 20",
     "topic" : "Industry News",
-    "expectedDuplicate" : false
-  },
-  {
-    "testName" :"Project Vellya weekly meetings",
-    "isSubject": true,
-    "a" : "RE: Harmon.ie/Project Vellya sync",
-    "b" : "Harmon.ie/Project Vellya (\"BDlid\") sync",
-    "topic" : "Project Vella",
     "expectedDuplicate" : false
   },
   {
@@ -198,14 +156,6 @@
     "a" : "The following IT Evaluation Request opportunity was created for:\r\n\r\nContact Name:  AAA BBB\r\nAccount Name: XXXXXX\r\nJob title:Sales Manager\r\nCompany Size: Small Enterprise (1000-3999)\r\nCurrent Segmentation: Suspected Influencer\r\n\r\n\r\nHow many licenses would you like to evaluate:  5\r\n\r\n\r\n\r\nPotential seats:\r\n\r\n\r\nEmail: aa@aa.com.com\r\n",
     "b" : "The following IT Evaluation Request opportunity was created for:\r\n\r\nContact Name:  DDD EEE\r\nAccount Name: YYY YYYY \r\nJob title:Head IT\r\nCompany Size: Medium (500-1000)\r\nCurrent Segmentation: Suspected Influencer\r\n\r\n\r\nHow many licenses would you like to evaluate:  10\r\n\r\n\r\n\r\nPotential seats:\r\n\r\n\r\nEmail: lala@lala.com",
     "topic" : "Job title",
-    "expectedDuplicate" : true
-  },
-  {
-    "testName" :"Voicemail Message",
-    "isSubject": true,
-    "a" : "Voicemail Message (0014089891339 > Jacov Cohen) From:0014089891339",
-    "b" : "Voicemail Message (0018001346946 > Jacov Cohen) From:0018001346946",
-    "topic" : "Voicemail Message",
     "expectedDuplicate" : true
   }
 

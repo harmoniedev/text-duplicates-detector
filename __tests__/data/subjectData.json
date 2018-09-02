@@ -1,0 +1,51 @@
+[
+  {
+    "testName": "SalesForce Opportunity Created - subject",
+    "a": "New Request a Quote Opportunity Created - EaP",
+    "b": "New Request a Quote Opportunity Created - Bowlinf Revision",
+    "isSubject": true,
+    "topic": "Opportunity",
+    "expectedDuplicate": true
+  },
+  {
+    "testName": "Approve Check Run in Bill.com - Run",
+    "isSubject": true,
+    "a": "harmon.ie - Approve 3/19 Check Run in Bill.com",
+    "b": "harmon.ie - Approve 4/4 Check Run in Bill.com",
+    "topic": "Run",
+    "expectedDuplicate": true
+  },
+  {
+    "testName": "[harmon.ie] Update:",
+    "isSubject": true,
+    "a": "[harmon.ie] Update: Missing followed sites",
+    "b": "[harmon.ie] Update: Outlook runs out of memory",
+    "topic": "Update",
+    "expectedDuplicate": true
+  },
+  {
+    "testName" :"harmonie inustry news",
+    "isSubject": true,
+    "a" : "FW: harmon.ie Industry News - April 31",
+    "b" : "harmon.ie Industry News - March 20",
+    "topic" : "Industry News",
+    "expectedDuplicate" : true
+  },
+  {
+    "testName" :"Project Vellya weekly meetings",
+    "isSubject": true,
+    "a" : "RE: Harmon.ie/Project Vellya sync",
+    "b" : "Harmon.ie/Project Vellya (\"BDlid\") sync",
+    "topic" : "Project Vellya",
+    "expectedDuplicate" : false
+  },
+  {
+    "testName" :"Voicemail Message",
+    "isSubject": true,
+    "a" : "Voicemail Message (0014089891339 > Jacov Cohen) From:0014089891339",
+    "b" : "Voicemail Message (0018001346946 > Jacov Cohen) From:0018001346946",
+    "topic" : "Voicemail Message",
+    "expectedDuplicate" : true
+  }
+
+]
