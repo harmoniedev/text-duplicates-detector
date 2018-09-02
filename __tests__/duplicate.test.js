@@ -11,6 +11,7 @@ test('phrase not found', () => {
   const res = isDuplicate('', '', 'ppp');
   expect(res).toBe(false);
 });
+ 
 
 test('isDuplicate with different topics', () => {
   const textA = 'Agents seems really really down';

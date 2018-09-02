@@ -76,21 +76,21 @@ function minLenCompared(inSubject) {
 }
 
 function textDist(text1, text2) {
-  const { diffRatio, prefixMatch } = smartDiff(text1, text2);
   const lenCompared = calcLenCompared(text1, text2);
-  return { diffRatio, lenCompared, prefixMatch };
+  return { ...smartDiff(text1, text2), lenCompared };
 }
 
 const DUPLICATE_THRESHOLD = 0.3;
 
 function calcNbrDistShortInSubject(myLeftInfo, myRightInfo) {
-  function inner(leftInfo, rightInfo) {
-    return (leftInfo.diffRatio <= DUPLICATE_THRESHOLD)
-      && ((leftInfo.lenCompared >= MIN_LEN_COMPARED)
-        || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)));
+  function inner({ diffRatio, lenCompared }, matchFromOther) {
+    return (diffRatio <= DUPLICATE_THRESHOLD)
+      && ((lenCompared >= MIN_LEN_COMPARED)
+        || (matchFromOther >= (MIN_LEN_COMPARED - lenCompared)));
   }
 
-  const duplicate = inner(myLeftInfo, myRightInfo) || inner(myRightInfo, myLeftInfo);
+  const duplicate = inner(myLeftInfo, myRightInfo.prefixMatch)
+    || inner(myRightInfo, myLeftInfo.suffixMatch);
   return { myLeftInfo, myRightInfo, duplicate };
 }
 

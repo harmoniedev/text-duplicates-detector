@@ -5,6 +5,7 @@ function smartDiff(text1, text2) {
     cntDiff: 0,
     cntMatch: 0,
     prefixMatch: 0,
+    suffixMatch: 0,
     first: true,
   };
   const result = diff(text1, text2)
@@ -14,12 +15,14 @@ function smartDiff(text1, text2) {
           ...res,
           first: false,
           cntMatch: res.cntMatch + hunk.length,
+          suffixMatch: hunk.length,
           prefixMatch: res.first ? hunk.length : res.prefixMatch,
         };
       }
       return {
         ...res,
         first: false,
+        suffixMatch: 0,
         // prefixMatch is the length of prefix match (from left to right, before first diff)
         prefixMatch: (res.first === 0) ? 0 : res.prefixMatch,
         cntDiff: res.cntDiff + hunk.length,

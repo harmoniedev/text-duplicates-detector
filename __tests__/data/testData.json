@@ -9,18 +9,35 @@
   {
     "testName": "subject - prefixMatch - perfect match",
     "a": "The last Google project",
-    "b": "The last Google project",
+    "b": "This last Google project",
     "topic": "Google",
     "isSubject": true,
     "expectedDuplicate": true
   },
   {
     "testName": "subject - prefixMatch - imperfect match",
-    "a": "The last Google G project",
-    "b": "The last Google project",
+    "a": "The big o Google project",
+    "b": "The big Google G project",
+    "topic": "Google",
+    "isSubject": true,
+    "expectedDuplicate": false
+  },
+
+  {
+    "testName": "subject - suffixMatch - perfect match",
+    "a": "C Baaggg Google faa pro",
+    "b": "A Baaggg Google gaa pro",
     "topic": "Google",
     "isSubject": true,
     "expectedDuplicate": true
+  },
+  {
+    "testName": "subject - suffixMatch - imperfect match",
+    "a": "C Baa A Google faa pro",
+    "b": "A Baa Google gaa pro",
+    "topic": "Google",
+    "isSubject": true,
+    "expectedDuplicate": false
   },
   {
     "testName": "zendesk - Assignee",
