@@ -1,6 +1,5 @@
-const diff = require('fast-diff');
 const helpers = require('@harmon.ie/email-util/nlp-helpers');
-
+const { smartDiff } = require('./utils');
 // TODO: [harmon.ie] Update: <var text> --> Enough to detect match in either side
 // (left/right) of the topic
 // TODO:Q: return also diff of left+right ?
@@ -67,45 +66,18 @@ function convertTexts(texts) {
 const MIN_LEN_COMPARED = 10;
 const MIN_LEN_COMPARED_SUBJECT = 6;
 
-function smartDiff(text1, text2) {
-  const result = diff(text1, text2)
-    .reduce((res, [hunkType, hunk]) => {
-      if (hunkType === diff.EQUAL) {
-        return {
-          ...res,
-          cntMatch: res.cntMatch + hunk.length,
-        };
-      }
-      return {
-        ...res,
-        // prefixMatch is the length of prefix match (from left to right, before first diff)
-        prefixMatch: (res.cntDiff === 0) ? res.cntMatch : res.prefixMatch,
-        cntDiff: res.cntDiff + hunk.length,
-      };
-    }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
-  return {
-    ...result,
-    diffRatio: result.cntDiff / (result.cntDiff + result.cntMatch),
-  };
-}
-
 function calcLenCompared(text1, text2) {
   const [lhs, rhs] = convertTexts([text1, text2]);
-  const lenCompared = Math.min(lhs.length, rhs.length);
-  return lenCompared;
+  return Math.min(lhs.length, rhs.length);
 }
 
 function minLenCompared(inSubject) {
   return inSubject ? MIN_LEN_COMPARED_SUBJECT : MIN_LEN_COMPARED;
 }
 
-function textDist(text1, text2, inSubject) {
-  const lenCompared = calcLenCompared(text1, text2);
-  if (lenCompared <= minLenCompared(inSubject)) {
-    return { diffRatio: 1, lenCompared: 0, prefixMatch: 0 };
-  }
+function textDist(text1, text2) {
   const { diffRatio, prefixMatch } = smartDiff(text1, text2);
-
+  const lenCompared = calcLenCompared(text1, text2);
   return { diffRatio, lenCompared, prefixMatch };
 }
 
@@ -122,14 +94,16 @@ function calcNbrDistShortInSubject(myLeftInfo, myRightInfo) {
   return { myLeftInfo, myRightInfo, duplicate };
 }
 
-function isSmallDiff(leftDiff, rightDiff) {
-  return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD;
+function isDiffAcceptable({ diffRatio, lenCompared }, inSubject) {
+  return diffRatio <= DUPLICATE_THRESHOLD
+    && (lenCompared > minLenCompared(inSubject));
 }
 
 function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
   const leftInfo = textDist(aLeft, bLeft, inSubject);
   const rightInfo = textDist(aRight, bRight, inSubject);
-  const duplicate = isSmallDiff(leftInfo.diffRatio, rightInfo.diffRatio);
+  const duplicate = isDiffAcceptable(leftInfo, inSubject)
+    || isDiffAcceptable(rightInfo, inSubject);
 
   return {
     leftInfo,

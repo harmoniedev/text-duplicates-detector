@@ -7,10 +7,19 @@
     "expectedDuplicate": false
   },
   {
-    "testName": "period and opportunity - opportunity",
-    "a": "The last period was not exciting due to the negociations that lead nowhere, until an intersting opportunity for IBM occurred last week.",
-    "b":"After a long period of inactivity, an intersting opportunity for IBM occurred last week.",
-    "topic": "opportunity",
+    "testName": "subject - prefixMatch - perfect match",
+    "a": "The last Google project",
+    "b": "The last Google project",
+    "topic": "Google",
+    "isSubject": true,
+    "expectedDuplicate": true
+  },
+  {
+    "testName": "subject - prefixMatch - imperfect match",
+    "a": "The last Google G project",
+    "b": "The last Google project",
+    "topic": "Google",
+    "isSubject": true,
     "expectedDuplicate": true
   },
   {

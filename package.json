@@ -3,7 +3,7 @@
   "version": "0.0.3",
   "description": "Detects text duplication",
   "scripts": {
-    "lint": "eslint index.js __tests__",
+    "lint": "eslint index.js __tests__ utils.js",
     "test": "jest --coverage",
     "watch-test": "jest --watchAll"
   },

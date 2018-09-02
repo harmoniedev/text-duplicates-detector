@@ -13,7 +13,7 @@ For instance, if we look at two pieces of text:
 
 >After a long **period** of inactivity, an intersting **opportunity** for IBM occurred last week.
 
->The last **period** was not exciting due to the negociations that lead nowhere, until an intersting **opportunity** for Google occurred last week.
+>The last **period** was not exciting due to the negociations that lead nowhere, until an interesting **opportunity** for IBM occurred last week.
 
 In the neighborhood of **period**, the texts are not similar while in the neighborhood of **opportunity**, the texts are similar.
 
@@ -68,26 +68,26 @@ TBD
 
 ## How does it work ?
 
-The library implements a simple algorithm to detect lines that are candidate for being the start of a signature, and score each candidate by examining the lines following the start.
+The algorithm smartly compares left and right neigborhoods of the texts if either the left neighborhoods or the right neighborhoods are similar then we consider the texts are duplicate.
 
-Example of trigger candidates:
+More formally, we decompose two occurrences of *<PHRASE>* in two texts *<TEXT_A>* and *<TEXT_B>* in:
 
-- name of the email sender
-- words such as `Thanks` and `Regards`
+```
+<LEFT_A> <PHRASE> <RIGHT_A> 
+and 
+<LEFT_B> <PHRASE> <RIGHT_B>
+```
 
-The score of each candidate is determined by the likelihood of the following lines to be part of the signature. Each of the lines that follow a trigger candidiate is given a score that relates to this likelihood.
+If either:
 
-Example of lines with high score:
+- *<LEFT_A>* is similar to *<LEFT_B>* or
+- *<RIGHT_A>* is similar to *<RIGHT_B>*
 
-- phone number
-- email address
-- url
-- sender name.
+then *<TEXT_A>* and *<TEXT_B>* are duplicate occurrences of *<PHRASE>*.
 
-Also, we implement some heuristics, for instance:
-- long lines should not appear too much in signature
-- signatures should not have too many lines
 
-Note: The detectors of phone numbers, email addresses and urls are simple and their purpose is to support the signature scoring. They shouldn't be used standalone. Please refer to a specialized detector and validation libraries for that.      
+Two neigborhoods are similar if the ratio between the number of different characters and the total number of characters is below 0.3 (configurable). 
+
+We rely of [fast-diff](https://www.npmjs.com/package/fast-diff) module to count the number of different characters.
 
 ## Roadmap and Contributions

@@ -7,7 +7,6 @@ testMe.describeJsonData('duplicate text tests', testData, (t) => {
   expect(res).toEqual(t.expectedDuplicate);
 });
 
-
 test('phrase not found', () => {
   const res = isDuplicate('', '', 'ppp');
   expect(res).toBe(false);
