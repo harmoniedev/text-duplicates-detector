@@ -5,22 +5,24 @@ const helpers = require('@harmon.ie/email-util/nlp-helpers');
 // (left/right) of the topic
 // TODO:Q: return also diff of left+right ?
 
+const LEN_TEXT_AFTER_NEW_LINE = 20;
 function getTextAfterNewLines(str) {
   const lines = str.match(/[^\r\n]+/g);
   if (!lines) {
     return '';
   }
-  return lines.reduce((res, line) => res + line.substr(0, 20), '');
+  return lines.reduce((res, line) => res + line.substr(0, LEN_TEXT_AFTER_NEW_LINE), '');
 }
 
-function calcNbrLeftAndRight(text, m, nbrSize) {
+function calcNbrLeftAndRight(m, nbrSize) {
   const startOfLeft = Math.max(m.idxStart - nbrSize, 0);
   const endOfLeft = m.idxStart;
   const startOfRight = m.idxStart + m.matchStr.length;
-  const endOfRight = Math.min(m.idxStart + m.matchStr.length + nbrSize, text.length - 1);
+  const endOfRight = Math.min(m.idxStart + m.matchStr.length + nbrSize, m.text.length - 1);
   return {
-    left: text.substring(startOfLeft, endOfLeft),
-    right: text.substring(startOfRight, endOfRight),
+    left: m.text.substring(startOfLeft, endOfLeft),
+    right: m.text.substring(startOfRight, endOfRight),
+    phrase: m.matchStr,
   };
 }
 
@@ -34,7 +36,7 @@ function getNbrNewLines(left, right) {
   };
 }
 
-function getNbr(topicText, _text, inSubject) {
+function getNbr(phrase, _text, inSubject) {
   function normalizedText() {
     if (inSubject) {
       return helpers.getNormalizedSubject(_text);
@@ -43,12 +45,12 @@ function getNbr(topicText, _text, inSubject) {
   }
   const text = normalizedText();
   // Find the topicText and extract its surrounding window (+-N characters)
-  const topicInText = helpers.findTopicInText(topicText, text);
-  if (topicInText === null) {
+  const phraseInText = helpers.findTopicInText(phrase, text);
+  if (phraseInText === null) {
     return null;
   }
 
-  const { left, right } = calcNbrLeftAndRight(text, topicInText, inSubject ? 20 : 70);
+  const { left, right } = calcNbrLeftAndRight(phraseInText, inSubject ? 20 : 70);
   const { nlLeft, nlRight } = getNbrNewLines(left, right);
   return {
     left,
@@ -66,19 +68,25 @@ const MIN_LEN_COMPARED = 10;
 const MIN_LEN_COMPARED_SUBJECT = 6;
 
 function smartDiff(text1, text2) {
-  const delta = diff(text1, text2);
-  return delta.reduce((res, [startPos, chars]) => {
-    if (startPos === 0) {
-      res.cntMatch += chars.length;
-      return res;
-    }
-    if (res.cntDiff === 0) {
-      // Record the len of prefix match (from left to right, before first diff)
-      res.prefixMatch = res.cntMatch;
-    }
-    res.cntDiff += chars.length;
-    return res;
-  }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
+  const result = diff(text1, text2)
+    .reduce((res, [hunkType, hunk]) => {
+      if (hunkType === diff.EQUAL) {
+        return {
+          ...res,
+          cntMatch: res.cntMatch + hunk.length,
+        };
+      }
+      return {
+        ...res,
+        // prefixMatch is the length of prefix match (from left to right, before first diff)
+        prefixMatch: (res.cntDiff === 0) ? res.cntMatch : res.prefixMatch,
+        cntDiff: res.cntDiff + hunk.length,
+      };
+    }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
+  return {
+    ...result,
+    diffRatio: result.cntDiff / (result.cntDiff + result.cntMatch),
+  };
 }
 
 function calcLenCompared(text1, text2) {
@@ -96,8 +104,7 @@ function textDist(text1, text2, inSubject) {
   if (lenCompared <= minLenCompared(inSubject)) {
     return { diffRatio: 1, lenCompared: 0, prefixMatch: 0 };
   }
-  const { cntDiff, cntMatch, prefixMatch } = smartDiff(text1, text2);
-  const diffRatio = cntDiff / (cntDiff + cntMatch);
+  const { diffRatio, prefixMatch } = smartDiff(text1, text2);
 
   return { diffRatio, lenCompared, prefixMatch };
 }
