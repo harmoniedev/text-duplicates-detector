@@ -186,8 +186,7 @@ function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
         textB: otherText,
         phraseA: phrase,
         phraseB: otherPhrase,
-      }, inSubject,
-    )) {
+      }, inSubject)) {
       return res + 1;
     }
     return res;
