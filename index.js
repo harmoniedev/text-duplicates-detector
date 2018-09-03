@@ -148,15 +148,9 @@ function nbrDist(nbr1, nbr2, inSubject) {
   };
 }
 
-function convertToArray(t) {
-  if (!Array.isArray(t)) {
-    return [t, t];
-  }
-  return t;
-}
 
-function calcDuplicationDetails({ textA, textB, phraseA, phraseB, isSubject }) {
-  phraseB = phraseB !== undefined ? phraseB : phraseA;
+function calcDuplicationDetails({ textA, textB, phraseA, phraseB: _phraseB, isSubject }) {
+  const phraseB = _phraseB !== undefined ? _phraseB : phraseA;
   const nbr1 = getNbr(phraseA, textA, isSubject);
   const nbr2 = getNbr(phraseB, textB, isSubject);
   if (nbr1 === null || nbr2 === null) {
