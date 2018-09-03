@@ -12,13 +12,13 @@ describe('smartDiff', () => {
       const text1 = 'aaa bbb ccc';
       const text2 = 'aaa bbb ddd';
       const diff = smartDiff(text1, text2);
-      expect(diff.diffRatio).toBe(6 / 14);
+      expect(diff.diffRatio).toBe(3 / 11);
     });
     test('similar with different prefix', () => {
       const text1 = 'f aaa bbb ccc';
       const text2 = 'aaa bbb ddd';
       const diff = smartDiff(text1, text2);
-      expect(diff.diffRatio).toBe(8 / 16);
+      expect(diff.diffRatio).toBeCloseTo(5 / 13);
     });
   });
   describe('prefixMatch', () => {

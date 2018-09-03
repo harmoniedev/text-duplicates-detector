@@ -1,4 +1,7 @@
-let dup = require('../index.js');
-let text1 = 'After a long period of inactivity, an intersting opportunity for IBM occurred last week';
-let text2 = 'The last period was not exciting due to the negociations that lead nowhere, until an interesting opportunity for IBM occurred last week';
-console.log(dup.calcDuplicationDetails(text1, text2, 'opportunity'));
+// const diff = require('fast-diff');
+const dup = require('../index.js');
+
+const text1 = 'Voicemail Message received (John > Jessy) in Office Voicemail at 15:21';
+const text2 = 'Voicemail Message received (David > Franck) in Office Voicemail at 07:21';
+console.log(dup.calcDuplicationDetails(text1, text2, 'Office Voicemail'));
+// console.log(diff('Voicemail Message received (John > Jessy)', 'Voicemail Message received (David > Franck)'));

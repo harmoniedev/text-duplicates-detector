@@ -1,13 +1,6 @@
 const diff = require('fast-diff');
 
 function smartDiff(text1, text2) {
-  const initialResult = {
-    cntDiff: 0,
-    cntMatch: 0,
-    prefixMatch: 0,
-    suffixMatch: 0,
-    first: true,
-  };
   const result = diff(text1, text2)
     .reduce((res, [hunkType, hunk]) => {
       if (hunkType === diff.EQUAL) {
@@ -27,10 +20,24 @@ function smartDiff(text1, text2) {
         prefixMatch: (res.first === 0) ? 0 : res.prefixMatch,
         cntDiff: res.cntDiff + hunk.length,
       };
-    }, initialResult);
+    }, {
+        cntDiff: 0,
+        cntMatch: 0,
+        prefixMatch: 0,
+        suffixMatch: 0,
+        first: true,
+      });
+  const cntTotal = Math.max(text1.length, text2.length);
+  const matchRatio = result.cntMatch / cntTotal;
+  const diffRatio = 1 - matchRatio;
   return {
-    ...result,
-    diffRatio: result.cntDiff / (result.cntDiff + result.cntMatch),
+    prefixMatch: result.prefixMatch,
+    suffixMatch: result.suffixMatch,
+    cntDiff: result.cntDiff,
+    cntMatch: result.cntMatch,
+    cntTotal,
+    matchRatio,
+    diffRatio,
   };
 }
 

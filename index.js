@@ -155,15 +155,16 @@ function convertToArray(t) {
   return t;
 }
 
-function calcDuplicationDetails(text1, text2, topic, isSubject) {
-  const [topic1, topic2] = convertToArray(topic);
-  const nbr1 = getNbr(topic1, text1, isSubject);
-  const nbr2 = getNbr(topic2, text2, isSubject);
+function calcDuplicationDetails({ textA, textB, phraseA, phraseB, isSubject }) {
+  phraseB = phraseB !== undefined ? phraseB : phraseA;
+  const nbr1 = getNbr(phraseA, textA, isSubject);
+  const nbr2 = getNbr(phraseB, textB, isSubject);
   if (nbr1 === null || nbr2 === null) {
     return {
       dist: {
         duplicate: false,
       },
+      phraseNotFound: true,
     };
   }
   const dist = nbrDist(nbr1, nbr2, isSubject);
@@ -171,15 +172,22 @@ function calcDuplicationDetails(text1, text2, topic, isSubject) {
   return { dist, nbr: nbr1, nbrOther: nbr2 };
 }
 
-function isDuplicate(text1, text2, topic, isSubject = false) {
-  return calcDuplicationDetails(text1, text2, topic, isSubject).dist.duplicate;
+function isDuplicate(args) {
+  return calcDuplicationDetails(args).dist.duplicate;
 }
 
 
 function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
   return textAndPhrases.reduce((res, otherTextAndPhrase) => {
     const [otherText, otherPhrase] = otherTextAndPhrase;
-    if (isDuplicate(text, otherText, [phrase, otherPhrase], inSubject)) {
+    if (isDuplicate(
+      {
+        textA: text,
+        textB: otherText,
+        phraseA: phrase,
+        phraseB: otherPhrase,
+      }, inSubject,
+    )) {
       return res + 1;
     }
     return res;

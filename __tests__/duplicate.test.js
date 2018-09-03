@@ -3,22 +3,35 @@ const { isDuplicate, numOfDuplicates } = require('../index');
 const testData = require('./data/testData.json');
 
 testMe.describeJsonData('duplicate text tests', testData, (t) => {
-  const res = isDuplicate(t.a, t.b, t.topic, t.isSubject);
+  const res = isDuplicate(
+    {
+      textA: t.a,
+      textB: t.b,
+      phraseA: t.topic,
+      isSubject: t.isSubject,
+    },
+  );
   expect(res).toEqual(t.expectedDuplicate);
 });
 
 test('phrase not found', () => {
-  const res = isDuplicate('', '', 'ppp');
+  const res = isDuplicate(
+    {
+      textA: '',
+      textB: '',
+      phraseA: 'ppp',
+    },
+  );
   expect(res).toBe(false);
 });
- 
+
 
 test('isDuplicate with different topics', () => {
   const textA = 'Agents seems really really down';
   const textB = 'Agents of the Mall seems really really down';
-  const topicA = 'Agents';
-  const topicB = 'Agents of the Mall';
-  const res = isDuplicate(textA, textB, [topicA, topicB]);
+  const phraseA = 'Agents';
+  const phraseB = 'Agents of the Mall';
+  const res = isDuplicate({ textA, textB, phraseA, phraseB });
   expect(res).toBe(true);
 });
 
