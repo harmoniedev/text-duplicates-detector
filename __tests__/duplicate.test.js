@@ -1,5 +1,5 @@
 const testMe = require('@harmon.ie/email-util/testsUtils');
-const { isDuplicate, numOfDuplicates } = require('../index');
+const { isDuplicate, numOfDuplicates, getDuplicates } = require('../index');
 const testData = require('./data/testData.json');
 
 testMe.describeJsonData('duplicate text tests', testData, (t) => {
@@ -35,5 +35,28 @@ describe('numOfDuplicates', () => {
     const phrase = 'Opportunity';
     const textAndPhrases = Array(5).fill(['text', 'phrase']);
     expect(numOfDuplicates([text, phrase], textAndPhrases)).toBe(0);
+  });
+});
+
+describe('numOfDuplicates', () => {
+  test('all duplicates', () => {
+    const text = 'New Request a Quote Opportunity Created - EaP';
+    const phrase = 'Opportunity';
+    const textAndPhrases = Array(5).fill(null).map((x, idx) => ({ text, phrase, id: idx }));
+    expect(getDuplicates([text, phrase], textAndPhrases)).toHaveLength(5);
+  });
+  test('no duplicates', () => {
+    const text = 'New Request a Quote Opportunity Created - EaP';
+    const phrase = 'Opportunity';
+    const textAndPhrases = Array(5).fill({ text: 'text', phrase: 'phrase' });
+    expect(getDuplicates([text, phrase], textAndPhrases)).toHaveLength(0);
+  });
+  test('some duplicates', () => {
+    const text = 'New Request a Quote Opportunity Created - EaP';
+    const phrase = 'Opportunity';
+    const dups = Array(5).fill(null).map((x, idx) => ({ text, phrase, id: idx }));
+    const nonDups = Array(5).fill(null).map((x, idx) => ({ text: 'text', phrase: 'phrase', id: `bad-${idx}` }));
+    const textAndPhrases = dups.concat(nonDups);
+    expect(getDuplicates([text, phrase], textAndPhrases)).toEqual(dups);
   });
 });

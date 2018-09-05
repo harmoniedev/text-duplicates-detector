@@ -217,9 +217,21 @@ function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
   }, 0);
 }
 
+function getDuplicates([textA, phraseA], occurrences, inSubject) {
+  return occurrences.reduce((dups, occurrence) => {
+    const { text, phrase } = occurrence;
+    if (isDuplicate(textA, text, [phraseA, phrase], inSubject)) {
+      dups.push(occurrence);
+      return dups;
+    }
+    return dups;
+  }, []);
+}
+
 module.exports = {
   isDuplicate,
   numOfDuplicates,
+  getDuplicates,
   calcDuplicationDetails,
   getNbr,
   nbrDist,
