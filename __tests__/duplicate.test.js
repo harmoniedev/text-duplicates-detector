@@ -19,6 +19,19 @@ testMe.describeJsonData('validation tests', validData, (t) => {
   expect(res).toEqual(t.expectedDuplicate);
 });
 
+// testMe.describeJsonData('duplicate subject tests', [{
+//   "testName": "special-chars topic",
+//   "isSubject": false,
+//   "a": "aaa?!@#$%^&*(~``= ?la la test!@# !@#$%^&*",
+//   "b": "aaa?!@#$%^&*(~``= ?la la test!@# !@#$%^&*",
+//   "topic": "?la la test!@#",
+//   "expectedDuplicate": true
+// }], (t) => {
+//   const res = isDuplicate(t.a, t.b, t.topic, t.isSubject);
+//   expect(res).toEqual(t.expectedDuplicate);
+// });
+
+
 test('phrase not found', () => {
   const res = isDuplicate('', '', 'ppp');
   expect(res).toBe(false);
