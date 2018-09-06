@@ -86,25 +86,25 @@ function smartDiff(text1, text2) {
   };
 }
 
-//Calc min of LR nbrs lengths
+// Calc min of LR nbrs lengths
 function calcLenCompared(text1, text2) {
-  //Removes spaces and newlines - do not participate in len-compared
+  // Removes spaces and newlines - do not participate in len-compared
   function removeIrrelevantCharacters(texts) {
-   return texts.map(text => text.replace(/^(\n| )+|(\n| )+$/g, ''));
+    return texts.map(text => text.replace(/^(\n| )+|(\n| )+$/g, ''));
   }
   const [lhs, rhs] = removeIrrelevantCharacters([text1, text2]);
   const lenCompared = Math.min(lhs.length, rhs.length);
   return lenCompared;
 }
 
-//Subject - requires smaller nbr compared body 
+// Subject - requires smaller nbr compared body
 function minLenCompared(inSubject) {
   return inSubject ? MIN_LEN_COMPARED_SUBJECT : MIN_LEN_COMPARED;
 }
 
 function textDist(text1, text2, inSubject) {
   const lenCompared = calcLenCompared(text1, text2);
-  //If nbr is extermenly small (ex: 10 chars in body) --> reject 
+  // If nbr is extermenly small (ex: 10 chars in body) --> reject
   if (lenCompared <= minLenCompared(inSubject)) {
     return { diffRatio: 1, lenCompared: 0, prefixMatch: 0 };
   }
@@ -117,7 +117,8 @@ const DUPLICATE_THRESHOLD = 0.3;
 
 function calcNbrDistShortInSubject(myLeftInfo, myRightInfo) {
   function inner(leftInfo, rightInfo) {
-    //* one nbr (ex: left) is of min len (10) Or: left nbr is too small, so must find prefix (suffix) match from other (ex: right) nbr
+    // one nbr (ex: left) is of min len (10) Or: left nbr is too small,
+    // so must find prefix (suffix) match from other (ex: right) nbr
     return (leftInfo.diffRatio <= DUPLICATE_THRESHOLD)
       && ((leftInfo.lenCompared >= MIN_LEN_COMPARED)
         || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)));
@@ -217,9 +218,21 @@ function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
   }, 0);
 }
 
+function getDuplicates([textA, phraseA], occurrences, inSubject) {
+  return occurrences.reduce((dups, occurrence) => {
+    const { text, phrase } = occurrence;
+    if (isDuplicate(textA, text, [phraseA, phrase], inSubject)) {
+      dups.push(occurrence);
+      return dups;
+    }
+    return dups;
+  }, []);
+}
+
 module.exports = {
   isDuplicate,
   numOfDuplicates,
+  getDuplicates,
   calcDuplicationDetails,
   getNbr,
   nbrDist,
