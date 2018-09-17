@@ -131,7 +131,7 @@ function calcNbrDistShortInSubject(myLeftInfo, myRightInfo, threshold) {
 }
 
 function isSmallDiff(leftDiff, rightDiff, threshold) {
-  return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD_NL;
+  return Math.min(leftDiff, rightDiff) <= threshold;
 }
 
 function calcNbrDist(aLeft, bLeft, aRight, bRight, threshold, inSubject) {
@@ -172,7 +172,8 @@ function nbrDist(nbr1, nbr2, inSubject) {
     leftInfo: nlLeftInfo,
     rightInfo: nlRightInfo,
     duplicate: nlDuplicate,
-  } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, DUPLICATE_THRESHOLD_NL, inSubject);
+  } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight,
+    DUPLICATE_THRESHOLD_NL, inSubject);
   return {
     duplicate: nlDuplicate,
     nlLeftInfo,
