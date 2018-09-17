@@ -37,10 +37,11 @@
     "a" : "RE: Harmon.ie/Project Vellya sync",
     "b" : "Harmon.ie/Project Vellya (\"BDlid\") sync",
     "topic" : "Project Vellya",
-    "expectedDuplicate" : false
+    "expectedDuplicate" : true
   },
   {
     "testName" :"Voicemail Message",
+    "skip": "sequence of numbers should probably be normalized to a token",
     "isSubject": true,
     "a" : "Voicemail Message (0014089891339 > Jacov Cohen) From:0014089891339",
     "b" : "Voicemail Message (0018001346946 > Jacov Cohen) From:0018001346946",
