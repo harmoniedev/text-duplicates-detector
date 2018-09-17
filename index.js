@@ -114,12 +114,14 @@ function textDist(text1, text2, inSubject) {
 }
 
 const DUPLICATE_THRESHOLD = 0.3;
+const DUPLICATE_THRESHOLD_NL = 0.35;
 
-function calcNbrDistShortInSubject(myLeftInfo, myRightInfo) {
+
+function calcNbrDistShortInSubject(myLeftInfo, myRightInfo, threshold) {
   function inner(leftInfo, rightInfo) {
     // one nbr (ex: left) is of min len (10) Or: left nbr is too small,
     // so must find prefix (suffix) match from other (ex: right) nbr
-    return (leftInfo.diffRatio <= DUPLICATE_THRESHOLD)
+    return (leftInfo.diffRatio <= threshold)
       && ((leftInfo.lenCompared >= MIN_LEN_COMPARED)
         || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)));
   }
@@ -128,14 +130,14 @@ function calcNbrDistShortInSubject(myLeftInfo, myRightInfo) {
   return { myLeftInfo, myRightInfo, duplicate };
 }
 
-function isSmallDiff(leftDiff, rightDiff) {
-  return Math.min(leftDiff, rightDiff) <= DUPLICATE_THRESHOLD;
+function isSmallDiff(leftDiff, rightDiff, threshold) {
+  return Math.min(leftDiff, rightDiff) <= threshold;
 }
 
-function calcNbrDist(aLeft, bLeft, aRight, bRight, inSubject) {
+function calcNbrDist(aLeft, bLeft, aRight, bRight, threshold, inSubject) {
   const leftInfo = textDist(aLeft, bLeft, inSubject);
   const rightInfo = textDist(aRight, bRight, inSubject);
-  const duplicate = isSmallDiff(leftInfo.diffRatio, rightInfo.diffRatio);
+  const duplicate = isSmallDiff(leftInfo.diffRatio, rightInfo.diffRatio, threshold);
 
   return {
     leftInfo,
@@ -149,7 +151,7 @@ function nbrDist(nbr1, nbr2, inSubject) {
     leftInfo,
     rightInfo,
     duplicate,
-  } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, inSubject);
+  } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, DUPLICATE_THRESHOLD, inSubject);
   if (duplicate) {
     // Problem: Subject duplicates are based on small nbr size
     // (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
@@ -162,7 +164,7 @@ function nbrDist(nbr1, nbr2, inSubject) {
 
     // TODO:Debug:Remove:False
     if (inSubject) {
-      return calcNbrDistShortInSubject(leftInfo, rightInfo);
+      return calcNbrDistShortInSubject(leftInfo, rightInfo, DUPLICATE_THRESHOLD);
     }
     return { leftInfo, rightInfo, duplicate };
   }
@@ -170,7 +172,8 @@ function nbrDist(nbr1, nbr2, inSubject) {
     leftInfo: nlLeftInfo,
     rightInfo: nlRightInfo,
     duplicate: nlDuplicate,
-  } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight, inSubject);
+  } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight,
+    DUPLICATE_THRESHOLD_NL, inSubject);
   return {
     duplicate: nlDuplicate,
     nlLeftInfo,

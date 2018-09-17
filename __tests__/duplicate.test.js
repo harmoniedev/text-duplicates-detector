@@ -1,11 +1,35 @@
 const testMe = require('@harmon.ie/email-util/testsUtils');
 const { isDuplicate, numOfDuplicates, getDuplicates } = require('../index');
 const testData = require('./data/testData.json');
+const subjectData = require('./data/subjectData');
+const validData = require('./data/validationData');
 
 testMe.describeJsonData('duplicate text tests', testData, (t) => {
   const res = isDuplicate(t.a, t.b, t.topic, t.isSubject);
   expect(res).toEqual(t.expectedDuplicate);
 });
+
+testMe.describeJsonData('duplicate subject tests', subjectData, (t) => {
+  const res = isDuplicate(t.a, t.b, t.topic, t.isSubject);
+  expect(res).toEqual(t.expectedDuplicate);
+});
+
+testMe.describeJsonData('validation tests', validData, (t) => {
+  const res = isDuplicate(t.a, t.b, t.topic, t.isSubject);
+  expect(res).toEqual(t.expectedDuplicate);
+});
+
+// testMe.describeJsonData('duplicate subject tests', [{
+//   "testName": "special-chars topic",
+//   "isSubject": false,
+//   "a": "aaa?!@#$%^&*(~``= ?la la test!@# !@#$%^&*",
+//   "b": "aaa?!@#$%^&*(~``= ?la la test!@# !@#$%^&*",
+//   "topic": "?la la test!@#",
+//   "expectedDuplicate": true
+// }], (t) => {
+//   const res = isDuplicate(t.a, t.b, t.topic, t.isSubject);
+//   expect(res).toEqual(t.expectedDuplicate);
+// });
 
 
 test('phrase not found', () => {
@@ -38,7 +62,7 @@ describe('numOfDuplicates', () => {
   });
 });
 
-describe('numOfDuplicates', () => {
+describe('getDuplicates', () => {
   test('all duplicates', () => {
     const text = 'New Request a Quote Opportunity Created - EaP';
     const phrase = 'Opportunity';
