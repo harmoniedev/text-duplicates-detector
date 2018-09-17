@@ -16,9 +16,9 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@harmon.ie/email-util@harmoniedev/email-util#fix-find":
-  version "0.0.10"
-  resolved "https://codeload.github.com/harmoniedev/email-util/tar.gz/9ce088ee283420c57d2cb0aa2e15983b7ed36500"
+"@harmon.ie/email-util@harmoniedev/email-util#development":
+  version "0.0.11"
+  resolved "https://codeload.github.com/harmoniedev/email-util/tar.gz/2fe8f5952eef09153d81b6f37940efbcfb5cbdfb"
   dependencies:
     chrono-node "^1.3.5"
     datejs "^1.0.0-rc3"
