@@ -1,6 +1,8 @@
 const diff = require('fast-diff');
 const helpers = require('@harmon.ie/email-util/nlp-helpers');
 
+
+
 // TODO: [harmon.ie] Update: <var text> --> Enough to detect match in either side
 // (left/right) of the topic
 // TODO:Q: return also diff of left+right ?
@@ -68,15 +70,18 @@ function smartDiff(text1, text2) {
   const result = diff(text1, text2)
     .reduce((res, [hunkType, hunk]) => {
       if (hunkType === diff.EQUAL) {
+        const cntMatch = res.cntMatch + hunk.length;
         return {
           ...res,
-          cntMatch: res.cntMatch + hunk.length,
+          cntMatch,
+          // prefixMatch is the length of prefix match (from left to right, before first diff)
+          prefixMatch: (res.cntDiff === 0) ? cntMatch : res.prefixMatch,
+
         };
       }
+      //Diff hunk
       return {
         ...res,
-        // prefixMatch is the length of prefix match (from left to right, before first diff)
-        prefixMatch: (res.cntDiff === 0) ? res.cntMatch : res.prefixMatch,
         cntDiff: res.cntDiff + hunk.length,
       };
     }, { cntDiff: 0, cntMatch: 0, prefixMatch: 0 });
@@ -117,17 +122,26 @@ const DUPLICATE_THRESHOLD = 0.3;
 const DUPLICATE_THRESHOLD_NL = 0.35;
 
 
+
+// We require ~3 dups per body topics and  ~ 6 conversations to have duplication around the subject topic 
+// (since it disqualifies the all occurrences in all conv subjects)
+const DUPLICATE_IN_SUBJECT_SCORE = 0.5; 
+const DUPLICATE_IN_BODY_SCORE = 1;
+
+
 function calcNbrDistShortInSubject(myLeftInfo, myRightInfo, threshold) {
   function inner(leftInfo, rightInfo) {
     // one nbr (ex: left) is of min len (10) Or: left nbr is too small,
     // so must find prefix (suffix) match from other (ex: right) nbr
+    // If only short (6-7) left nbr, require exactMatch and ignore right nbr - return 0.5 instead of 1 for subject dups
     return (leftInfo.diffRatio <= threshold)
       && ((leftInfo.lenCompared >= MIN_LEN_COMPARED)
-        || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)));
+        || (rightInfo.prefixMatch >= (MIN_LEN_COMPARED - leftInfo.lenCompared)) 
+        ||  (leftInfo.diffRatio === 0 && (rightInfo.diffRatio === 0 || rightInfo.lenCompared === 0) ));
   }
 
   const duplicate = inner(myLeftInfo, myRightInfo) || inner(myRightInfo, myLeftInfo);
-  return { myLeftInfo, myRightInfo, duplicate };
+  return { myLeftInfo, myRightInfo, duplicate,  dupScore: (duplicate ? DUPLICATE_IN_SUBJECT_SCORE : 0) };
 }
 
 function isSmallDiff(leftDiff, rightDiff, threshold) {
@@ -166,16 +180,22 @@ function nbrDist(nbr1, nbr2, inSubject) {
     if (inSubject) {
       return calcNbrDistShortInSubject(leftInfo, rightInfo, DUPLICATE_THRESHOLD);
     }
-    return { leftInfo, rightInfo, duplicate };
+    return {leftInfo, rightInfo, duplicate,  dupScore: (duplicate ? DUPLICATE_IN_BODY_SCORE : 0)};
   }
+
+  //* Lazy calculate nlLeft, nlRight only if needed.  
+  const nlNbr1 = nbr1.nlLeft ? nbr1 : { ...nbr1, ...getNbrNewLines(nbr1.left, nbr1.right) };
+  const nlNbr2 = nbr2.nlLeft ? nbr2 : { ...nbr2, ...getNbrNewLines(nbr2.left, nbr2.right) };
+  
   const {
     leftInfo: nlLeftInfo,
     rightInfo: nlRightInfo,
     duplicate: nlDuplicate,
-  } = calcNbrDist(nbr1.nlLeft, nbr2.nlLeft, nbr1.nlRight, nbr2.nlRight,
+  } = calcNbrDist(nlNbr1.nlLeft, nlNbr2.nlLeft, nlNbr1.nlRight, nlNbr2.nlRight,
     DUPLICATE_THRESHOLD_NL, inSubject);
   return {
     duplicate: nlDuplicate,
+    dupScore: nlDuplicate ? DUPLICATE_IN_BODY_SCORE : 0,
     nlLeftInfo,
     nlRightInfo,
     leftInfo,
@@ -190,10 +210,7 @@ function convertToArray(t) {
   return t;
 }
 
-function calcDuplicationDetails(text1, text2, topic, isSubject) {
-  const [topic1, topic2] = convertToArray(topic);
-  const nbr1 = getNbr(topic1, text1, isSubject);
-  const nbr2 = getNbr(topic2, text2, isSubject);
+function calcDuplicationDetails(nbr1, nbr2, isSubject) {
   if (nbr1 === null || nbr2 === null) {
     return {
       dist: {
@@ -207,10 +224,14 @@ function calcDuplicationDetails(text1, text2, topic, isSubject) {
 }
 
 function isDuplicate(text1, text2, topic, isSubject = false) {
-  return calcDuplicationDetails(text1, text2, topic, isSubject).dist.duplicate;
+  const [topic1, topic2] = convertToArray(topic);
+  const nbr1 = getNbr(topic1, text1, isSubject);
+  const nbr2 = getNbr(topic2, text2, isSubject);
+  return calcDuplicationDetails(nbr1, nbr2, isSubject).dist.duplicate;
 }
 
 
+// Should be used only when text and topicText is given, but not nbr { left, right }
 function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
   return textAndPhrases.reduce((res, otherTextAndPhrase) => {
     const [otherText, otherPhrase] = otherTextAndPhrase;
@@ -220,6 +241,14 @@ function numOfDuplicates([text, phrase], textAndPhrases, inSubject) {
     return res;
   }, 0);
 }
+
+// Return the duplicate score for a single phrase occurrence vs. all others occurrences.
+function getDuplicatesScore(nbr, otherNbrs, inSubject) {
+  return otherNbrs.reduce(
+      (res, nbr2) => res + calcDuplicationDetails(nbr, nbr2, inSubject).dist.dupScore
+      ,0);
+}
+
 
 function getDuplicates([textA, phraseA], occurrences, inSubject) {
   return occurrences.reduce((dups, occurrence) => {
@@ -235,6 +264,7 @@ function getDuplicates([textA, phraseA], occurrences, inSubject) {
 module.exports = {
   isDuplicate,
   numOfDuplicates,
+  getDuplicatesScore,
   getDuplicates,
   calcDuplicationDetails,
   getNbr,

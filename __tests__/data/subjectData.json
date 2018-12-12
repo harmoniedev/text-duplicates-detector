@@ -1,5 +1,21 @@
 [
   {
+    "testName": "Us Submission very very short leftNbr only",
+    "a": "RE: Contact Us Submission",
+    "b": "Contact Us Submission",
+    "isSubject": true,
+    "topic": "Us Submission",
+    "expectedDuplicate": true
+  },
+  {
+    "testName": "Us Submission short subject",
+    "a": "RE: Contact Us Submission - Support",
+    "b": "Contact Us Submission - Support",
+    "isSubject": true,
+    "topic": "Us Submission",
+    "expectedDuplicate": true
+  },
+  {
     "testName": "SalesForce Opportunity Created - subject",
     "a": "New Request a Quote Opportunity Created - EaP",
     "b": "New Request a Quote Opportunity Created - Bowlinf Revision",
