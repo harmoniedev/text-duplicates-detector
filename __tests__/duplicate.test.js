@@ -6,7 +6,7 @@ const validData = require('./data/validationData');
 const { expect } = require('chai');
 
 if (global.Java) {
-  const DuplicateDetectorClass = Java.type('com.harmonie.topics.Main.DuplicateDetector');
+  const DuplicateDetectorClass = Java.type('com.harmonie.topics.DuplicateDetector');
   const duplicateDetector = new DuplicateDetectorClass();
   console.log(`duplicateDetector=${duplicateDetector}`);
 
