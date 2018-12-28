@@ -29,7 +29,6 @@ testMe.describeJsonData('duplicate text tests', testData, (t) => {
 });
 
 testMe.describeJsonData('duplicate subject tests', subjectData, (t) => {
-  debugger; //TODO:Debug:Remove
   const res = isDuplicate(t.a, t.b, t.topic, t.isSubject);
   expect(res).to.equal(t.expectedDuplicate);
 });

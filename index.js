@@ -166,6 +166,8 @@ function nbrDist(nbr1, nbr2, inSubject) {
     rightInfo,
     duplicate,
   } = calcNbrDist(nbr1.left, nbr2.left, nbr1.right, nbr2.right, DUPLICATE_THRESHOLD, inSubject);
+  const subjOrBodyScore = inSubject ? DUPLICATE_IN_SUBJECT_SCORE : DUPLICATE_IN_BODY_SCORE;
+  const res = { leftInfo, rightInfo, duplicate, dupScore: (duplicate ? subjOrBodyScore : 0)};
   if (duplicate) {
     // Problem: Subject duplicates are based on small nbr size
     // (ex: 'Industry News' subject: 'harmon.ie Industry News - March 28')
@@ -180,13 +182,17 @@ function nbrDist(nbr1, nbr2, inSubject) {
     if (inSubject) {
       return calcNbrDistShortInSubject(leftInfo, rightInfo, DUPLICATE_THRESHOLD);
     }
-    return {leftInfo, rightInfo, duplicate,  dupScore: (duplicate ? DUPLICATE_IN_BODY_SCORE : 0)};
+    return res;
   }
 
-  //* Lazy calculate nlLeft, nlRight only if needed.  
+  if (inSubject) {
+    return res; // No nlDuplicate retry (newLines dups) inSubject. If reaches this line - duplicate: false
+  }
+
+  //* Lazy calculate nlLeft, nlRight only if needed. 
   const nlNbr1 = nbr1.nlLeft ? nbr1 : { ...nbr1, ...getNbrNewLines(nbr1.left, nbr1.right) };
   const nlNbr2 = nbr2.nlLeft ? nbr2 : { ...nbr2, ...getNbrNewLines(nbr2.left, nbr2.right) };
-  
+ 
   const {
     leftInfo: nlLeftInfo,
     rightInfo: nlRightInfo,
